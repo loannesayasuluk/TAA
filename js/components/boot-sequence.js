@@ -225,8 +225,8 @@ class BootSequence {
         // 관리자 메시지 표시
         await this.showAdminMessage(bootText);
         
-        // 관리자로 즉시 접속
-        this.enterAdminMode();
+        // 관리자 로그인 페이지로 이동
+        this.redirectToAdminLogin();
     }
 
     // 글리치 효과 시작
@@ -256,7 +256,7 @@ class BootSequence {
             "ADMINISTRATOR VERIFICATION...",
             "ACCESS GRANTED: ADMINISTRATOR MODE",
             "BYPASSING SECURITY PROTOCOLS...",
-            "ADMINISTRATOR LOGIN SUCCESSFUL"
+            "관리자 모드 확인. 로그인 화면으로 이동합니다."
         ];
         
         bootText.textContent += '\n\n';
@@ -270,29 +270,12 @@ class BootSequence {
         await this.delay(1000);
     }
 
-    // 관리자 모드 진입
-    enterAdminMode() {
+    // 관리자 로그인 페이지로 리디렉션
+    redirectToAdminLogin() {
         // 부팅 완료 상태 저장
         if (window.sessionManager) {
             sessionManager.setBootCompleted();
-            sessionManager.setCurrentScreen('main');
-            sessionManager.setLoggedIn();
-        }
-        
-        // 관리자 계정 정보 설정
-        if (window.authService) {
-            // 가상의 관리자 계정 생성
-            const adminUser = {
-                uid: 'admin-bypass',
-                email: 'admin@taa.archives',
-                displayName: 'SYSTEM ADMINISTRATOR',
-                securityClearance: 5
-            };
-            
-            // AuthService에 관리자 정보 설정
-            window.authService.currentUser = adminUser;
-            window.authService.securityClearance = 5;
-            window.authService.updateUI();
+            sessionManager.setCurrentScreen('admin-login');
         }
         
         // 부팅 화면 숨기기
@@ -301,8 +284,50 @@ class BootSequence {
         
         setTimeout(() => {
             bootScreen.classList.add('hidden');
-            this.showMainApp();
+            
+            // 관리자 로그인 페이지로 이동
+            if (window.router && window.router.navigate) {
+                console.log('Navigating to admin login via router');
+                window.router.navigate('/admin-login');
+            } else {
+                console.log('Showing admin login screen directly');
+                this.showAdminLoginScreen();
+            }
         }, 1000);
+    }
+
+    // 관리자 로그인 화면 표시
+    showAdminLoginScreen() {
+        console.log('Showing admin login screen');
+        
+        // 모든 화면 숨기기
+        const allScreens = [
+            'boot-sequence',
+            'login-screen', 
+            'register-screen',
+            'main-app',
+            'admin-dashboard'
+        ];
+        
+        allScreens.forEach(screenId => {
+            const screen = document.getElementById(screenId);
+            if (screen) {
+                screen.classList.add('hidden');
+            }
+        });
+        
+        // 관리자 로그인 화면 표시
+        const adminLoginScreen = document.getElementById('admin-login-screen');
+        if (adminLoginScreen) {
+            console.log('Admin login screen found, showing...');
+            adminLoginScreen.classList.remove('hidden');
+            adminLoginScreen.style.opacity = '0';
+            setTimeout(() => {
+                adminLoginScreen.style.opacity = '1';
+            }, 100);
+        } else {
+            console.error('Admin login screen not found!');
+        }
     }
 
     // 부팅 시퀀스 재시작

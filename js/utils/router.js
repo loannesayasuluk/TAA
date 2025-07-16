@@ -67,6 +67,20 @@ class Router {
             view: 'discussion',
             handler: (params) => this.showDiscussionView(params.id)
         });
+
+        // 관리자 로그인 페이지
+        this.addRoute('/admin-login', {
+            title: 'TAA Archives - Admin Login',
+            view: 'admin-login',
+            handler: () => this.showAdminLoginView()
+        });
+
+        // 관리자 대시보드
+        this.addRoute('/admin', {
+            title: 'TAA Archives - Admin Dashboard',
+            view: 'admin',
+            handler: () => this.showAdminDashboardView()
+        });
     }
 
     // 라우트 추가
@@ -274,6 +288,75 @@ class Router {
             window.taaApp.loadFile(articleId).then(() => {
                 window.taaApp.showView('discussion');
             });
+        }
+    }
+
+    // 관리자 로그인 화면 표시
+    showAdminLoginView() {
+        console.log('Router: Showing admin login view');
+        
+        // 모든 화면 숨기기
+        const allScreens = [
+            'boot-sequence',
+            'login-screen', 
+            'register-screen',
+            'main-app',
+            'admin-dashboard'
+        ];
+        
+        allScreens.forEach(screenId => {
+            const screen = document.getElementById(screenId);
+            if (screen) {
+                screen.classList.add('hidden');
+            }
+        });
+        
+        // 관리자 로그인 화면 표시
+        const adminLoginScreen = document.getElementById('admin-login-screen');
+        if (adminLoginScreen) {
+            console.log('Router: Admin login screen found, showing...');
+            adminLoginScreen.classList.remove('hidden');
+            adminLoginScreen.style.opacity = '0';
+            setTimeout(() => {
+                adminLoginScreen.style.opacity = '1';
+            }, 100);
+        } else {
+            console.error('Router: Admin login screen not found!');
+        }
+    }
+
+    // 관리자 대시보드 화면 표시
+    showAdminDashboardView() {
+        console.log('Router: Showing admin dashboard view');
+        
+        // 모든 화면 숨기기
+        const allScreens = [
+            'boot-sequence',
+            'login-screen', 
+            'register-screen',
+            'main-app',
+            'admin-login-screen'
+        ];
+        
+        allScreens.forEach(screenId => {
+            const screen = document.getElementById(screenId);
+            if (screen) {
+                screen.classList.add('hidden');
+            }
+        });
+        
+        // 관리자 대시보드 표시
+        if (window.adminDashboard) {
+            console.log('Router: Using admin dashboard component');
+            window.adminDashboard.show();
+        } else {
+            console.log('Router: Showing admin dashboard directly');
+            const adminDashboard = document.getElementById('admin-dashboard');
+            if (adminDashboard) {
+                adminDashboard.classList.remove('hidden');
+            } else {
+                console.error('Router: Admin dashboard not found!');
+            }
         }
     }
 

@@ -243,6 +243,73 @@
         </main>
     </div>
 
+    <!-- 관리자 로그인 화면 -->
+    <div id="admin-login-screen" class="admin-login-screen hidden">
+        <div class="admin-login-window">
+            <div class="admin-login-header">
+                <h1 class="system-text">TAA ARCHIVES</h1>
+                <h2 class="admin-title">ADMINISTRATOR ACCESS</h2>
+                <p class="admin-subtitle">SYSTEM ADMINISTRATOR LOGIN</p>
+            </div>
+            
+            <form id="admin-login-form" class="admin-login-form">
+                <div class="input-group">
+                    <label for="admin-id">ADMINISTRATOR ID:</label>
+                    <input type="text" id="admin-id" class="terminal-input" placeholder="Enter Administrator ID">
+                </div>
+                
+                <div class="input-group">
+                    <label for="admin-password">PASSWORD:</label>
+                    <input type="password" id="admin-password" class="terminal-input" placeholder="Enter Password">
+                </div>
+                
+                <button type="submit" class="terminal-btn">ADMIN LOGIN</button>
+            </form>
+            
+            <div id="admin-login-status" class="status-text"></div>
+            
+            <div class="admin-back-link">
+                <button onclick="router.navigate('/')" class="link-btn">← Back to Main</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 관리자 대시보드 -->
+    <div id="admin-dashboard" class="admin-dashboard hidden">
+        <nav class="admin-top-nav">
+            <div class="admin-nav-left">
+                <span class="system-text">TAA ARCHIVES - ADMIN DASHBOARD</span>
+            </div>
+            <div class="admin-nav-right">
+                <span id="admin-user-info" class="admin-user-info">ADMIN: SYSTEM ADMINISTRATOR</span>
+                <button id="admin-logout-btn" class="terminal-btn small">LOGOUT</button>
+            </div>
+        </nav>
+
+        <div class="admin-content">
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="content">콘텐츠 관리</button>
+                <button class="admin-tab" data-tab="users">사용자 관리</button>
+            </div>
+
+            <!-- 콘텐츠 관리 탭 -->
+            <div id="content-tab" class="admin-tab-content active">
+                <h2>콘텐츠 관리</h2>
+                <div id="admin-content-list" class="admin-list">
+                    <!-- 콘텐츠 목록이 여기에 로드됩니다 -->
+                </div>
+            </div>
+
+            <!-- 사용자 관리 탭 -->
+            <div id="users-tab" class="admin-tab-content">
+                <h2>사용자 관리</h2>
+                <div id="admin-user-list" class="admin-list">
+                    <!-- 사용자 목록이 여기에 로드됩니다 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 오디오 요소들 -->
     <audio id="keyboard-sound" preload="auto">
         <source src="assets/sounds/keyboard.mp3" type="audio/mpeg">
@@ -263,14 +330,17 @@
     <script src="js/utils/notification-system.js"></script>
     <script src="js/utils/session-manager.js"></script>
     <script src="js/utils/router.js"></script>
+    <script src="js/utils/admin-setup.js"></script>
     <script src="js/services/user-service.js"></script>
     <script src="js/services/auth-service.js"></script>
+    <script src="js/services/admin-auth-service.js"></script>
     <script src="js/services/file-service.js"></script>
     <script src="js/services/comment-service.js"></script>
     <script src="js/components/boot-sequence.js"></script>
     <script src="js/components/ghost-terminals.js"></script>
     <script src="js/components/file-editor.js"></script>
     <script src="js/components/comments.js"></script>
+    <script src="js/components/admin-dashboard.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html> 
