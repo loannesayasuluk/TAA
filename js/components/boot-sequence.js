@@ -4,6 +4,8 @@
 class BootSequence {
     constructor() {
         this.isRunning = false;
+        this.adminKeySequence = [];
+        this.adminKeyPattern = ['/', '/', '/', '/'];
         this.bootSteps = [
             {
                 text: "INITIALIZING TAA ARCHIVES...",
@@ -51,6 +53,9 @@ class BootSequence {
                 sound: false
             }
         ];
+        
+        // 관리자 키 시퀀스 리스너 설정
+        this.setupAdminKeyListener();
     }
 
     // 부팅 시퀀스 시작
@@ -170,6 +175,134 @@ class BootSequence {
             registerScreen.style.opacity = '1';
             terminalEffects.fadeIn(registerScreen);
         }, 100);
+    }
+
+    // 관리자 키 시퀀스 리스너 설정
+    setupAdminKeyListener() {
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '/') {
+                this.handleAdminKeyPress();
+            }
+        });
+    }
+
+    // 관리자 키 입력 처리
+    handleAdminKeyPress() {
+        this.adminKeySequence.push('/');
+        
+        // 최대 4개까지만 유지
+        if (this.adminKeySequence.length > 4) {
+            this.adminKeySequence.shift();
+        }
+        
+        // 패턴 매칭 확인
+        if (this.adminKeySequence.length === 4) {
+            const isMatch = this.adminKeySequence.every((key, index) => key === this.adminKeyPattern[index]);
+            if (isMatch) {
+                this.activateAdminMode();
+            }
+        }
+        
+        // 3초 후 시퀀스 초기화
+        setTimeout(() => {
+            this.adminKeySequence = [];
+        }, 3000);
+    }
+
+    // 관리자 모드 활성화
+    async activateAdminMode() {
+        console.log('ADMIN MODE ACTIVATED');
+        
+        // 부팅 시퀀스 중단
+        this.isRunning = false;
+        
+        const bootText = document.getElementById('boot-text');
+        const bootScreen = document.getElementById('boot-sequence');
+        
+        // 글리치 효과 시작
+        this.startGlitchEffect(bootScreen);
+        
+        // 관리자 메시지 표시
+        await this.showAdminMessage(bootText);
+        
+        // 관리자로 즉시 접속
+        this.enterAdminMode();
+    }
+
+    // 글리치 효과 시작
+    startGlitchEffect(element) {
+        element.classList.add('glitch-effect');
+        
+        // 랜덤 글리치 애니메이션
+        const glitchInterval = setInterval(() => {
+            element.style.transform = `translate(${Math.random() * 10 - 5}px, ${Math.random() * 10 - 5}px)`;
+            element.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
+        }, 50);
+        
+        // 3초 후 글리치 효과 제거
+        setTimeout(() => {
+            clearInterval(glitchInterval);
+            element.classList.remove('glitch-effect');
+            element.style.transform = '';
+            element.style.filter = '';
+        }, 3000);
+    }
+
+    // 관리자 메시지 표시
+    async showAdminMessage(bootText) {
+        const adminMessages = [
+            "SYSTEM COMPROMISED...",
+            "UNAUTHORIZED ACCESS DETECTED...",
+            "ADMINISTRATOR VERIFICATION...",
+            "ACCESS GRANTED: ADMINISTRATOR MODE",
+            "BYPASSING SECURITY PROTOCOLS...",
+            "ADMINISTRATOR LOGIN SUCCESSFUL"
+        ];
+        
+        bootText.textContent += '\n\n';
+        
+        for (const message of adminMessages) {
+            await this.typeText(bootText, message, false);
+            bootText.textContent += '\n';
+            await this.delay(300);
+        }
+        
+        await this.delay(1000);
+    }
+
+    // 관리자 모드 진입
+    enterAdminMode() {
+        // 부팅 완료 상태 저장
+        if (window.sessionManager) {
+            sessionManager.setBootCompleted();
+            sessionManager.setCurrentScreen('main');
+            sessionManager.setLoggedIn();
+        }
+        
+        // 관리자 계정 정보 설정
+        if (window.authService) {
+            // 가상의 관리자 계정 생성
+            const adminUser = {
+                uid: 'admin-bypass',
+                email: 'admin@taa.archives',
+                displayName: 'SYSTEM ADMINISTRATOR',
+                securityClearance: 5
+            };
+            
+            // AuthService에 관리자 정보 설정
+            window.authService.currentUser = adminUser;
+            window.authService.securityClearance = 5;
+            window.authService.updateUI();
+        }
+        
+        // 부팅 화면 숨기기
+        const bootScreen = document.getElementById('boot-sequence');
+        bootScreen.style.opacity = '0';
+        
+        setTimeout(() => {
+            bootScreen.classList.add('hidden');
+            this.showMainApp();
+        }, 1000);
     }
 
     // 부팅 시퀀스 재시작
