@@ -1,138 +1,119 @@
-// TAA Archives - Admin Account Setup Script
+// TAA Archives - Admin Account Setup
 // Firebase에 관리자 계정을 생성하는 유틸리티
 
 class AdminSetup {
     constructor() {
         this.adminEmail = 'apostleloannes@internal.taa';
-        this.adminPassword = 'qpwoei1029!';
+        this.adminPassword = 'eoqusdls0823!';
         this.adminAgentId = 'apostleloannes';
     }
 
     // 관리자 계정 생성
     async createAdminAccount() {
         try {
-            console.log('Creating admin account...');
-            
-            // 1. Firebase Auth에 사용자 생성
+            console.log('TAA Archives: Creating admin account...');
+
+            // Firebase Auth로 사용자 생성
             const userCredential = await auth.createUserWithEmailAndPassword(
-                this.adminEmail, 
+                this.adminEmail,
                 this.adminPassword
             );
-            
+
             const user = userCredential.user;
-            console.log('Admin user created in Auth:', user.uid);
-            
-            // 2. Firestore에 관리자 문서 생성
-            await this.createAdminDocument(user.uid);
-            
-            console.log('Admin account setup completed successfully!');
+
+            // 관리자 프로필 데이터
+            const adminProfile = {
+                uid: user.uid,
+                agentId: this.adminAgentId,
+                email: this.adminEmail,
+                displayName: 'System Administrator',
+                securityClearance: 5,
+                role: 'admin',
+                permissions: {
+                    canBanUsers: true,
+                    canManageUsers: true,
+                    canDeleteContent: true,
+                    canViewAllData: true,
+                    canAccessAdminPanel: true
+                },
+                isActive: true,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                createdBy: 'system'
+            };
+
+            // Firestore에 관리자 프로필 저장
+            await db.collection('users').doc(user.uid).set(adminProfile);
+
+            // Agent ID 중복 방지 레코드 생성
+            await db.collection('agent_ids').doc(this.adminAgentId).set({
+                uid: user.uid,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                isAdmin: true
+            });
+
+            console.log('TAA Archives: Admin account created successfully');
+            console.log('Admin ID:', this.adminAgentId);
+            console.log('Admin Email:', this.adminEmail);
+            console.log('Admin Password:', this.adminPassword);
+
             return {
                 success: true,
-                uid: user.uid,
-                message: 'Admin account created successfully'
+                message: '관리자 계정이 성공적으로 생성되었습니다.',
+                adminData: {
+                    agentId: this.adminAgentId,
+                    email: this.adminEmail,
+                    uid: user.uid
+                }
             };
-            
+
         } catch (error) {
-            console.error('Error creating admin account:', error);
+            console.error('TAA Archives: Error creating admin account:', error);
             
-            // 이미 존재하는 경우 처리
             if (error.code === 'auth/email-already-in-use') {
-                console.log('Admin account already exists, checking Firestore document...');
-                return await this.updateExistingAdminAccount();
+                return {
+                    success: false,
+                    message: '관리자 계정이 이미 존재합니다.',
+                    error: error.code
+                };
             }
             
             return {
                 success: false,
+                message: '관리자 계정 생성 중 오류가 발생했습니다.',
                 error: error.message
             };
         }
-    }
-
-    // 기존 관리자 계정 업데이트
-    async updateExistingAdminAccount() {
-        try {
-            // 기존 사용자 로그인
-            const userCredential = await auth.signInWithEmailAndPassword(
-                this.adminEmail, 
-                this.adminPassword
-            );
-            
-            const user = userCredential.user;
-            
-            // Firestore 문서 업데이트
-            await this.createAdminDocument(user.uid);
-            
-            // 로그아웃
-            await auth.signOut();
-            
-            console.log('Existing admin account updated successfully!');
-            return {
-                success: true,
-                uid: user.uid,
-                message: 'Existing admin account updated'
-            };
-            
-        } catch (error) {
-            console.error('Error updating existing admin account:', error);
-            return {
-                success: false,
-                error: error.message
-            };
-        }
-    }
-
-    // Firestore 관리자 문서 생성
-    async createAdminDocument(uid) {
-        const adminData = {
-            email: this.adminEmail,
-            agentId: this.adminAgentId,
-            displayName: 'SYSTEM ADMINISTRATOR',
-            role: 'admin',
-            securityClearance: 5,
-            isActive: true,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-            isAdmin: true,
-            permissions: {
-                canDeleteContent: true,
-                canBanUsers: true,
-                canManageUsers: true,
-                canViewAllData: true
-            }
-        };
-
-        await db.collection('users').doc(uid).set(adminData);
-        console.log('Admin document created in Firestore');
     }
 
     // 관리자 계정 존재 여부 확인
     async checkAdminAccount() {
         try {
-            const userCredential = await auth.signInWithEmailAndPassword(
-                this.adminEmail, 
-                this.adminPassword
-            );
-            
-            const user = userCredential.user;
-            const userDoc = await db.collection('users').doc(user.uid).get();
-            
-            // 로그아웃
-            await auth.signOut();
-            
-            if (userDoc.exists && userDoc.data().role === 'admin') {
+            const userSnapshot = await db.collection('users')
+                .where('role', '==', 'admin')
+                .limit(1)
+                .get();
+
+            if (!userSnapshot.empty) {
+                const adminDoc = userSnapshot.docs[0];
+                const adminData = adminDoc.data();
+                
                 return {
                     exists: true,
-                    uid: user.uid,
-                    data: userDoc.data()
-                };
-            } else {
-                return {
-                    exists: false,
-                    message: 'Admin document not found or role is not admin'
+                    adminData: {
+                        uid: adminDoc.id,
+                        ...adminData
+                    }
                 };
             }
-            
+
+            return {
+                exists: false,
+                adminData: null
+            };
+
         } catch (error) {
+            console.error('TAA Archives: Error checking admin account:', error);
             return {
                 exists: false,
                 error: error.message
@@ -140,34 +121,21 @@ class AdminSetup {
         }
     }
 
-    // 관리자 계정 삭제 (위험한 작업)
-    async deleteAdminAccount() {
-        try {
-            const userCredential = await auth.signInWithEmailAndPassword(
-                this.adminEmail, 
-                this.adminPassword
-            );
-            
-            const user = userCredential.user;
-            
-            // Firestore 문서 삭제
-            await db.collection('users').doc(user.uid).delete();
-            
-            // Auth 계정 삭제
-            await user.delete();
-            
-            console.log('Admin account deleted successfully!');
-            return {
-                success: true,
-                message: 'Admin account deleted'
-            };
-            
-        } catch (error) {
-            console.error('Error deleting admin account:', error);
-            return {
-                success: false,
-                error: error.message
-            };
+    // 관리자 계정 정보 출력
+    async printAdminInfo() {
+        const adminCheck = await this.checkAdminAccount();
+        
+        if (adminCheck.exists) {
+            console.log('=== TAA ARCHIVES ADMIN ACCOUNT INFO ===');
+            console.log('Agent ID:', adminCheck.adminData.agentId);
+            console.log('Email:', adminCheck.adminData.email);
+            console.log('Display Name:', adminCheck.adminData.displayName);
+            console.log('Security Clearance:', adminCheck.adminData.securityClearance);
+            console.log('Role:', adminCheck.adminData.role);
+            console.log('UID:', adminCheck.adminData.uid);
+            console.log('========================================');
+        } else {
+            console.log('TAA Archives: No admin account found');
         }
     }
 }
@@ -176,9 +144,24 @@ class AdminSetup {
 const adminSetup = new AdminSetup();
 window.adminSetup = adminSetup;
 
-console.log('TAA Archives: Admin setup utility initialized');
-
-// 개발용: 관리자 계정 생성 함수 (콘솔에서 실행 가능)
+// 브라우저 콘솔에서 사용할 수 있는 전역 함수들
 window.createAdminAccount = () => adminSetup.createAdminAccount();
 window.checkAdminAccount = () => adminSetup.checkAdminAccount();
-window.deleteAdminAccount = () => adminSetup.deleteAdminAccount(); 
+window.printAdminInfo = () => adminSetup.printAdminInfo();
+
+// 페이지 로드 시 관리자 계정 확인
+document.addEventListener('DOMContentLoaded', async () => {
+    // Firebase 초기화 대기
+    setTimeout(async () => {
+        if (typeof auth !== 'undefined' && typeof db !== 'undefined') {
+            console.log('TAA Archives: Checking admin account...');
+            await adminSetup.printAdminInfo();
+        }
+    }, 2000);
+});
+
+console.log('TAA Archives: Admin setup utility initialized');
+console.log('Available commands:');
+console.log('- createAdminAccount() : 관리자 계정 생성');
+console.log('- checkAdminAccount() : 관리자 계정 확인');
+console.log('- printAdminInfo() : 관리자 계정 정보 출력'); 

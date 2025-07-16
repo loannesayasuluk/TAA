@@ -54,6 +54,11 @@ class AdminDashboard {
                     await window.adminAuthService.loadAllUsers();
                 }
                 break;
+            case 'actions':
+                if (window.adminAuthService) {
+                    await window.adminAuthService.loadAdminActions();
+                }
+                break;
         }
     }
 

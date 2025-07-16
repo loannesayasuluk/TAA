@@ -220,6 +220,12 @@ class UserService {
                 throw new Error('등록되지 않은 Agent ID 또는 이메일입니다.');
             }
 
+            // 사용자 차단 상태 확인
+            if (user.isActive === false) {
+                const banReason = user.banReason || '정책 위반';
+                throw new Error(`계정이 차단되었습니다. (사유: ${banReason})`);
+            }
+
             // 이메일로 Firebase Auth 로그인
             const userCredential = await auth.signInWithEmailAndPassword(user.email, password);
 

@@ -311,17 +311,22 @@ class Router {
             }
         });
         
-        // 관리자 로그인 화면 표시
-        const adminLoginScreen = document.getElementById('admin-login-screen');
-        if (adminLoginScreen) {
-            console.log('Router: Admin login screen found, showing...');
-            adminLoginScreen.classList.remove('hidden');
-            adminLoginScreen.style.opacity = '0';
-            setTimeout(() => {
-                adminLoginScreen.style.opacity = '1';
-            }, 100);
+        // 관리자 로그인 화면 표시 (새로운 메서드 사용)
+        if (window.adminAuthService) {
+            window.adminAuthService.showAdminLoginScreen();
         } else {
-            console.error('Router: Admin login screen not found!');
+            // 폴백: 직접 표시
+            const adminLoginScreen = document.getElementById('admin-login-screen');
+            if (adminLoginScreen) {
+                console.log('Router: Admin login screen found, showing...');
+                adminLoginScreen.classList.remove('hidden');
+                adminLoginScreen.style.opacity = '0';
+                setTimeout(() => {
+                    adminLoginScreen.style.opacity = '1';
+                }, 100);
+            } else {
+                console.error('Router: Admin login screen not found!');
+            }
         }
     }
 

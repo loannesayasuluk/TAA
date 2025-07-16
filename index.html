@@ -245,31 +245,98 @@
 
     <!-- 관리자 로그인 화면 -->
     <div id="admin-login-screen" class="admin-login-screen hidden">
-        <div class="admin-login-window">
-            <div class="admin-login-header">
-                <h1 class="system-text">TAA ARCHIVES</h1>
-                <h2 class="admin-title">ADMINISTRATOR ACCESS</h2>
-                <p class="admin-subtitle">SYSTEM ADMINISTRATOR LOGIN</p>
+        <div class="admin-login-container">
+            <!-- 관리자 로그인 배경 효과 -->
+            <div class="admin-bg-grid"></div>
+            <div class="admin-bg-scanlines"></div>
+            
+            <!-- 관리자 로그인 메인 윈도우 -->
+            <div class="admin-login-window">
+                <!-- 상단 헤더 -->
+                <div class="admin-login-header">
+                    <div class="admin-logo">
+                        <div class="admin-logo-icon">⚡</div>
+                        <div class="admin-logo-text">
+                            <h1 class="admin-system-title">TAA ARCHIVES</h1>
+                            <h2 class="admin-access-title">ADMINISTRATOR ACCESS</h2>
+                        </div>
+                    </div>
+                    <div class="admin-security-level">
+                        <span class="security-badge">LEVEL 5 CLEARANCE REQUIRED</span>
+                    </div>
+                </div>
+                
+                <!-- 보안 경고 메시지 -->
+                <div class="admin-security-warning">
+                    <div class="warning-icon">⚠️</div>
+                    <div class="warning-text">
+                        <strong>SECURITY NOTICE:</strong> Unauthorized access attempts will be logged and reported.
+                    </div>
+                </div>
+                
+                <!-- 로그인 폼 -->
+                <form id="admin-login-form" class="admin-login-form">
+                    <div class="admin-input-group">
+                        <label for="admin-id" class="admin-label">
+                            <span class="label-icon">👤</span>
+                            ADMINISTRATOR ID
+                        </label>
+                        <input type="text" id="admin-id" class="admin-input" 
+                               placeholder="Enter Administrator ID" 
+                               value="apostleloannes">
+                        <div class="input-border"></div>
+                    </div>
+                    
+                    <div class="admin-input-group">
+                        <label for="admin-password" class="admin-label">
+                            <span class="label-icon">🔒</span>
+                            SECURITY PASSWORD
+                        </label>
+                        <input type="password" id="admin-password" class="admin-input" 
+                               placeholder="Enter Security Password"
+                               value="eoqusdls0823!">
+                        <div class="input-border"></div>
+                    </div>
+                    
+                    <!-- 보안 확인 체크박스 -->
+                    <div class="admin-security-check">
+                        <label class="security-checkbox">
+                            <input type="checkbox" id="admin-security-confirm" required>
+                            <span class="checkmark"></span>
+                            I confirm that I am an authorized system administrator
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="admin-login-btn">
+                        <span class="btn-icon">🔐</span>
+                        <span class="btn-text">AUTHENTICATE ADMIN</span>
+                        <div class="btn-loading" id="admin-btn-loading"></div>
+                    </button>
+                </form>
+                
+                <!-- 상태 메시지 -->
+                <div id="admin-login-status" class="admin-status-text"></div>
+                
+                <!-- 하단 링크 -->
+                <div class="admin-footer">
+                    <div class="admin-back-link">
+                        <button onclick="router.navigate('/')" class="admin-link-btn">
+                            <span class="link-icon">←</span>
+                            <span class="link-text">Return to Main System</span>
+                        </button>
+                    </div>
+                    <div class="admin-timestamp">
+                        <span class="timestamp-label">ACCESS ATTEMPT:</span>
+                        <span class="timestamp-value" id="admin-timestamp"></span>
+                    </div>
+                </div>
             </div>
             
-            <form id="admin-login-form" class="admin-login-form">
-                <div class="input-group">
-                    <label for="admin-id">ADMINISTRATOR ID:</label>
-                    <input type="text" id="admin-id" class="terminal-input" placeholder="Enter Administrator ID">
-                </div>
-                
-                <div class="input-group">
-                    <label for="admin-password">PASSWORD:</label>
-                    <input type="password" id="admin-password" class="terminal-input" placeholder="Enter Password">
-                </div>
-                
-                <button type="submit" class="terminal-btn">ADMIN LOGIN</button>
-            </form>
-            
-            <div id="admin-login-status" class="status-text"></div>
-            
-            <div class="admin-back-link">
-                <button onclick="router.navigate('/')" class="link-btn">← Back to Main</button>
+            <!-- 관리자 로그인 배경 장식 -->
+            <div class="admin-bg-decoration">
+                <div class="admin-bg-circle circle-1"></div>
+                <div class="admin-bg-circle circle-2"></div>
+                <div class="admin-bg-circle circle-3"></div>
             </div>
         </div>
     </div>
@@ -290,6 +357,7 @@
             <div class="admin-tabs">
                 <button class="admin-tab active" data-tab="content">콘텐츠 관리</button>
                 <button class="admin-tab" data-tab="users">사용자 관리</button>
+                <button class="admin-tab" data-tab="actions">작업 로그</button>
             </div>
 
             <!-- 콘텐츠 관리 탭 -->
@@ -305,6 +373,14 @@
                 <h2>사용자 관리</h2>
                 <div id="admin-user-list" class="admin-list">
                     <!-- 사용자 목록이 여기에 로드됩니다 -->
+                </div>
+            </div>
+
+            <!-- 작업 로그 탭 -->
+            <div id="actions-tab" class="admin-tab-content">
+                <h2>관리자 작업 로그</h2>
+                <div id="admin-action-log" class="admin-action-log">
+                    <!-- 작업 로그가 여기에 로드됩니다 -->
                 </div>
             </div>
         </div>

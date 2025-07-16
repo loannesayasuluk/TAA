@@ -634,8 +634,6 @@ body::after {
     box-shadow: 0 0 15px rgba(255, 107, 107, 0.4);
 }
 
-
-
 /* 파일 에디터 */
 .file-editor {
     background: linear-gradient(145deg, #000033, #191970);
@@ -671,196 +669,629 @@ body::after {
     opacity: 0.6;
 }
 
-    .editor-controls {
-        display: flex;
-        gap: 10px;
-    }
+.editor-controls {
+    display: flex;
+    gap: 10px;
+}
 
-    /* 관리자 로그인 화면 */
-    .admin-login-screen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: #191970;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 999;
-    }
+/* 관리자 로그인 화면 - 새로운 디자인 */
+.admin-login-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #000033 0%, #191970 50%, #000033 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    overflow: hidden;
+}
 
-    .admin-login-window {
-        background: linear-gradient(145deg, #000033, #191970);
-        border: 2px solid #FF0000;
-        border-radius: 10px;
-        padding: 40px;
-        box-shadow: 
-            0 0 30px rgba(255, 0, 0, 0.3),
-            inset 0 0 20px rgba(0, 0, 0, 0.5);
-        min-width: 400px;
-    }
+.admin-login-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-    .admin-login-header {
-        text-align: center;
-        margin-bottom: 30px;
-        border-bottom: 1px solid #FF0000;
-        padding-bottom: 20px;
-    }
+/* 관리자 로그인 배경 효과 */
+.admin-bg-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(255, 191, 0, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 191, 0, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+}
 
-    .admin-title {
-        font-size: 20px;
-        font-weight: 600;
-        color: #FF0000;
-        text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-        margin: 10px 0;
-    }
+.admin-bg-scanlines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255, 191, 0, 0.05) 2px,
+        rgba(255, 191, 0, 0.05) 4px
+    );
+    animation: scanlines 0.1s linear infinite;
+}
 
-    .admin-subtitle {
-        font-size: 14px;
-        color: #FF6666;
-        margin: 5px 0;
-    }
+@keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
+}
 
-    .admin-back-link {
-        text-align: center;
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 1px solid rgba(255, 0, 0, 0.3);
-    }
+/* 관리자 로그인 메인 윈도우 */
+.admin-login-window {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 3px solid #FFBF00;
+    border-radius: 15px;
+    padding: 50px;
+    box-shadow: 
+        0 0 50px rgba(255, 191, 0, 0.4),
+        inset 0 0 30px rgba(0, 0, 0, 0.7),
+        0 10px 30px rgba(0, 0, 0, 0.5);
+    min-width: 500px;
+    max-width: 600px;
+    position: relative;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+}
 
-    /* 관리자 대시보드 */
-    .admin-dashboard {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: #191970;
-        z-index: 998;
-    }
+.admin-login-window::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #FFBF00, #FFD700, #FFBF00, #FFD700);
+    border-radius: 17px;
+    z-index: -1;
+    animation: borderGlow 3s ease-in-out infinite alternate;
+}
 
-    .admin-top-nav {
-        background: linear-gradient(145deg, #000033, #191970);
-        border-bottom: 2px solid #FF0000;
-        padding: 15px 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
-    }
+@keyframes borderGlow {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
 
-    .admin-nav-left, .admin-nav-right {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
+/* 관리자 로그인 헤더 */
+.admin-login-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(255, 191, 0, 0.3);
+}
 
-    .admin-user-info {
-        color: #FF0000;
-        font-weight: 600;
-    }
+.admin-logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
 
-    .admin-content {
-        padding: 20px;
-        height: calc(100vh - 80px);
-        overflow-y: auto;
-    }
+.admin-logo-icon {
+    font-size: 32px;
+    color: #FFBF00;
+    animation: pulse 2s ease-in-out infinite;
+}
 
-    .admin-tabs {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-        border-bottom: 1px solid #FF0000;
-        padding-bottom: 10px;
-    }
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
 
-    .admin-tab {
-        background: transparent;
-        border: 1px solid #FF0000;
-        border-radius: 5px;
-        padding: 10px 20px;
-        color: #FF0000;
-        font-family: 'IBM Plex Mono', monospace;
-        font-size: 14px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
+.admin-logo-text {
+    display: flex;
+    flex-direction: column;
+}
 
-    .admin-tab:hover {
-        background-color: rgba(255, 0, 0, 0.1);
-    }
+.admin-system-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #FFBF00;
+    text-shadow: 0 0 15px rgba(255, 191, 0, 0.5);
+    margin: 0;
+    letter-spacing: 2px;
+}
 
-    .admin-tab.active {
-        background-color: #FF0000;
-        color: #000;
-    }
+.admin-access-title {
+    font-size: 14px;
+    color: #FFD700;
+    margin: 5px 0 0 0;
+    font-weight: 400;
+    letter-spacing: 1px;
+}
 
-    .admin-tab-content {
-        display: none;
-    }
+.admin-security-level {
+    text-align: right;
+}
 
-    .admin-tab-content.active {
-        display: block;
-    }
+.security-badge {
+    background: linear-gradient(145deg, #FF0000, #CC0000);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+}
 
-    .admin-tab-content h2 {
-        color: #FF0000;
-        margin-bottom: 20px;
-        font-size: 18px;
-    }
+/* 보안 경고 메시지 */
+.admin-security-warning {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: linear-gradient(145deg, rgba(255, 0, 0, 0.1), rgba(204, 0, 0, 0.1));
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 30px;
+}
 
-    .admin-list {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
+.warning-icon {
+    font-size: 24px;
+    color: #FF0000;
+}
 
-    .admin-content-item, .admin-user-item {
-        background: linear-gradient(145deg, #000033, #191970);
-        border: 1px solid #FF0000;
-        border-radius: 8px;
-        padding: 15px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: all 0.3s ease;
-    }
+.warning-text {
+    color: #FF6666;
+    font-size: 14px;
+    line-height: 1.4;
+}
 
-    .admin-content-item:hover, .admin-user-item:hover {
-        border-color: #FF6666;
-        box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
-    }
+.warning-text strong {
+    color: #FF0000;
+}
 
-    .content-info, .user-info {
-        flex: 1;
-    }
+/* 관리자 로그인 폼 */
+.admin-login-form {
+    margin-bottom: 30px;
+}
 
-    .content-info h3, .user-info h3 {
-        color: #FF0000;
-        margin-bottom: 5px;
-        font-size: 16px;
-    }
+.admin-input-group {
+    position: relative;
+    margin-bottom: 25px;
+}
 
-    .content-info p, .user-info p {
-        color: #FF6666;
-        margin: 2px 0;
-        font-size: 12px;
-    }
+.admin-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #FFBF00;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
-    .content-actions, .user-actions {
-        display: flex;
-        gap: 10px;
-    }
+.label-icon {
+    font-size: 16px;
+}
 
-    .terminal-btn.warning {
-        background: linear-gradient(145deg, #FF0000, #CC0000);
-        color: #FFF;
-    }
+.admin-input {
+    width: 100%;
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 2px solid #FFBF00;
+    border-radius: 8px;
+    padding: 15px 20px;
+    color: #FFBF00;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+    position: relative;
+}
 
-    .terminal-btn.warning:hover {
-        background: linear-gradient(145deg, #CC0000, #990000);
-    }
+.admin-input::placeholder {
+    color: rgba(255, 191, 0, 0.5);
+}
+
+.admin-input:focus {
+    border-color: #FFD700;
+    box-shadow: 0 0 20px rgba(255, 191, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.input-border {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #FFBF00, #FFD700);
+    transition: width 0.3s ease;
+}
+
+.admin-input:focus + .input-border {
+    width: 100%;
+}
+
+/* 보안 확인 체크박스 */
+.admin-security-check {
+    margin-bottom: 30px;
+}
+
+.security-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #FFBF00;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 15px;
+    background: linear-gradient(145deg, rgba(255, 191, 0, 0.05), rgba(255, 215, 0, 0.05));
+    border: 1px solid rgba(255, 191, 0, 0.2);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.security-checkbox:hover {
+    background: linear-gradient(145deg, rgba(255, 191, 0, 0.1), rgba(255, 215, 0, 0.1));
+    border-color: rgba(255, 191, 0, 0.4);
+}
+
+.security-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #FFBF00;
+    border-radius: 4px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.security-checkbox input[type="checkbox"]:checked + .checkmark {
+    background-color: #FFBF00;
+    border-color: #FFD700;
+}
+
+.security-checkbox input[type="checkbox"]:checked + .checkmark::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #000;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* 관리자 로그인 버튼 */
+.admin-login-btn {
+    width: 100%;
+    background: linear-gradient(145deg, #FF0000, #CC0000);
+    border: none;
+    border-radius: 10px;
+    padding: 18px 30px;
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.admin-login-btn:hover {
+    background: linear-gradient(145deg, #CC0000, #990000);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255, 0, 0, 0.4);
+}
+
+.admin-login-btn:active {
+    transform: translateY(0);
+}
+
+.btn-icon {
+    font-size: 18px;
+}
+
+.btn-text {
+    font-weight: 700;
+}
+
+.btn-loading {
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: none;
+}
+
+.admin-login-btn.loading .btn-loading {
+    display: block;
+}
+
+.admin-login-btn.loading .btn-text {
+    opacity: 0.7;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 관리자 상태 메시지 */
+.admin-status-text {
+    text-align: center;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    min-height: 20px;
+}
+
+.admin-status-text.error {
+    background: linear-gradient(145deg, rgba(255, 0, 0, 0.1), rgba(204, 0, 0, 0.1));
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    color: #FF6666;
+}
+
+.admin-status-text.success {
+    background: linear-gradient(145deg, rgba(0, 255, 0, 0.1), rgba(0, 204, 0, 0.1));
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    color: #66FF66;
+}
+
+/* 관리자 푸터 */
+.admin-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 191, 0, 0.2);
+}
+
+.admin-link-btn {
+    background: none;
+    border: 1px solid #FFBF00;
+    border-radius: 6px;
+    padding: 10px 15px;
+    color: #FFBF00;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-link-btn:hover {
+    background-color: rgba(255, 191, 0, 0.1);
+    border-color: #FFD700;
+    transform: translateX(-5px);
+}
+
+.link-icon {
+    font-size: 16px;
+}
+
+.admin-timestamp {
+    text-align: right;
+    color: #888;
+    font-size: 12px;
+}
+
+.timestamp-label {
+    color: #666;
+    margin-right: 5px;
+}
+
+.timestamp-value {
+    color: #FFBF00;
+    font-weight: 600;
+}
+
+/* 관리자 배경 장식 */
+.admin-bg-decoration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.admin-bg-circle {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 191, 0, 0.1), transparent);
+    animation: float 6s ease-in-out infinite;
+}
+
+.circle-1 {
+    width: 200px;
+    height: 200px;
+    top: 10%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.circle-2 {
+    width: 150px;
+    height: 150px;
+    top: 60%;
+    right: 15%;
+    animation-delay: 2s;
+}
+
+.circle-3 {
+    width: 100px;
+    height: 100px;
+    bottom: 20%;
+    left: 20%;
+    animation-delay: 4s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+/* 관리자 대시보드 */
+.admin-dashboard {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #191970;
+    z-index: 998;
+}
+
+.admin-top-nav {
+    background: linear-gradient(145deg, #000033, #191970);
+    border-bottom: 2px solid #FF0000;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+}
+
+.admin-nav-left, .admin-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.admin-user-info {
+    color: #FF0000;
+    font-weight: 600;
+}
+
+.admin-content {
+    padding: 20px;
+    height: calc(100vh - 80px);
+    overflow-y: auto;
+}
+
+.admin-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #FF0000;
+    padding-bottom: 10px;
+}
+
+.admin-tab {
+    background: transparent;
+    border: 1px solid #FF0000;
+    border-radius: 5px;
+    padding: 10px 20px;
+    color: #FF0000;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.admin-tab:hover {
+    background-color: rgba(255, 0, 0, 0.1);
+}
+
+.admin-tab.active {
+    background-color: #FF0000;
+    color: #000;
+}
+
+.admin-tab-content {
+    display: none;
+}
+
+.admin-tab-content.active {
+    display: block;
+}
+
+.admin-tab-content h2 {
+    color: #FF0000;
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+.admin-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.admin-content-item, .admin-user-item {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FF0000;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.admin-content-item:hover, .admin-user-item:hover {
+    border-color: #FF6666;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
+}
+
+.content-info, .user-info {
+    flex: 1;
+}
+
+.content-info h3, .user-info h3 {
+    color: #FF0000;
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.content-info p, .user-info p {
+    color: #FF6666;
+    margin: 2px 0;
+    font-size: 12px;
+}
+
+.content-actions, .user-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.terminal-btn.warning {
+    background: linear-gradient(145deg, #FF0000, #CC0000);
+    color: #FFF;
+}
+
+.terminal-btn.warning:hover {
+    background: linear-gradient(145deg, #CC0000, #990000);
+}
 
 .editor-content {
     padding: 20px;
@@ -1186,5 +1617,198 @@ body::after {
     
     .editor-controls {
         justify-content: center;
+    }
+}
+
+/* 관리자 대시보드 추가 스타일 */
+.clearance-select {
+    background-color: #000033;
+    color: #FFBF00;
+    border: 1px solid #FFBF00;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+}
+
+.clearance-select:focus {
+    outline: none;
+    border-color: #FFD700;
+    box-shadow: 0 0 5px rgba(255, 191, 0, 0.3);
+}
+
+.status-active {
+    color: #00FF00;
+    font-weight: bold;
+}
+
+.status-banned {
+    color: #FF4444;
+    font-weight: bold;
+}
+
+/* 작업 로그 스타일 */
+.admin-action-log {
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.admin-action-item {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.admin-action-item:hover {
+    border-color: #FFD700;
+    box-shadow: 0 4px 10px rgba(255, 191, 0, 0.2);
+}
+
+.action-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.action-type {
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.action-type.user_ban {
+    background-color: #FF4444;
+    color: white;
+}
+
+.action-type.user_unban {
+    background-color: #00AA00;
+    color: white;
+}
+
+.action-type.user_delete {
+    background-color: #880000;
+    color: white;
+}
+
+.action-type.content_delete {
+    background-color: #FF8800;
+    color: white;
+}
+
+.action-type.clearance_update {
+    background-color: #0088FF;
+    color: white;
+}
+
+.action-time {
+    color: #888;
+    font-size: 12px;
+}
+
+.action-target {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.action-admin {
+    color: #888;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.action-details {
+    background-color: rgba(255, 191, 0, 0.1);
+    padding: 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    border-left: 3px solid #FFBF00;
+}
+
+.no-data {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    padding: 20px;
+}
+
+/* 전역 메시지 스타일 */
+.global-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(145deg, #000033, #191970);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 5px;
+    z-index: 10000;
+    font-family: 'IBM Plex Mono', monospace;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    border: 1px solid #FFBF00;
+    max-width: 400px;
+    animation: slideIn 0.3s ease-out;
+}
+
+.global-message.error {
+    border-color: #FF4444;
+    background: linear-gradient(145deg, #330000, #660000);
+}
+
+.global-message.warning {
+    border-color: #FF8800;
+    background: linear-gradient(145deg, #332200, #664400);
+}
+
+.global-message.success {
+    border-color: #00AA00;
+    background: linear-gradient(145deg, #003300, #006600);
+}
+
+.message-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.message-text {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.message-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.message-close:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
     }
 } 
