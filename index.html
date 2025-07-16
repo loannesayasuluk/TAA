@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>중앙정보처리시스템 - 내부 정보 네트워크</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/terminal.css">
+    <link rel="stylesheet" href="styles/wiki.css">
+    <link rel="stylesheet" href="styles/notifications.css">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+</head>
+<body>
+    <!-- 부팅 시퀀스 화면 -->
+    <div id="boot-sequence" class="boot-screen">
+        <div class="terminal-cursor"></div>
+        <div id="boot-text"></div>
+    </div>
+
+    <!-- 로그인 화면 -->
+    <div id="login-screen" class="login-screen hidden">
+        <div class="login-window">
+            <div class="login-header">
+                <span class="system-text">중앙정보처리시스템 - 보안 접속</span>
+            </div>
+            <div class="login-form">
+                <div class="input-group">
+                    <label for="agent-id">AGENT ID OR EMAIL:</label>
+                    <input type="text" id="agent-id" class="terminal-input" autocomplete="off" placeholder="Enter Agent ID or Email">
+                </div>
+                <div class="input-group">
+                    <label for="password">PASSWORD:</label>
+                    <input type="password" id="password" class="terminal-input" autocomplete="off">
+                </div>
+                <button id="login-btn" class="terminal-btn">AUTHENTICATE</button>
+                <div class="form-switch">
+                    <span class="switch-text">계정이 없으신가요? </span>
+                    <button id="show-register-btn" class="link-btn">회원가입</button>
+                </div>
+            </div>
+            <div id="login-status" class="status-text"></div>
+        </div>
+    </div>
+
+    <!-- 회원가입 화면 -->
+    <div id="register-screen" class="login-screen hidden">
+        <div class="login-window">
+            <div class="login-header">
+                <span class="system-text">중앙정보처리시스템 - 신규 등록</span>
+            </div>
+            <div class="login-form">
+                <div class="input-group">
+                    <label for="register-agent-id">AGENT ID:</label>
+                    <div class="input-with-button">
+                        <input type="text" id="register-agent-id" class="terminal-input" autocomplete="off">
+                        <button type="button" id="check-agent-id-btn" class="check-btn">중복확인</button>
+                    </div>
+                    <div id="agent-id-status" class="status-indicator"></div>
+                </div>
+                <div class="input-group">
+                    <label for="register-email">EMAIL:</label>
+                    <div class="input-with-button">
+                        <input type="email" id="register-email" class="terminal-input" autocomplete="off">
+                        <button type="button" id="check-email-btn" class="check-btn">중복확인</button>
+                    </div>
+                    <div id="email-status" class="status-indicator"></div>
+                </div>
+                <div class="input-group">
+                    <label for="register-password">PASSWORD:</label>
+                    <input type="password" id="register-password" class="terminal-input" autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label for="register-confirm-password">CONFIRM PASSWORD:</label>
+                    <input type="password" id="register-confirm-password" class="terminal-input" autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label for="register-clearance">SECURITY CLEARANCE:</label>
+                    <select id="register-clearance" class="terminal-input">
+                        <option value="1">LEVEL 1 - 일반 접근</option>
+                        <option value="2">LEVEL 2 - 제한적 접근</option>
+                        <option value="3">LEVEL 3 - 관리자 접근</option>
+                    </select>
+                </div>
+                <button id="register-btn" class="terminal-btn">REGISTER</button>
+                <div class="form-switch">
+                    <span class="switch-text">이미 계정이 있으신가요? </span>
+                    <button id="show-login-btn" class="link-btn">로그인</button>
+                </div>
+            </div>
+            <div id="register-status" class="status-text"></div>
+        </div>
+    </div>
+
+    <!-- 메인 애플리케이션 -->
+    <div id="main-app" class="main-app hidden">
+        <!-- 상단 네비게이션 -->
+        <nav class="top-nav">
+            <div class="nav-left">
+                <span class="system-text">TAA ARCHIVES v1.0</span>
+                <span id="current-time" class="time-display"></span>
+            </div>
+            <div class="nav-center">
+                <input type="text" id="search-input" class="search-input" placeholder="SEARCH ARCHIVES...">
+            </div>
+            <div class="nav-right">
+                <span id="agent-info" class="agent-info">AGENT: <span id="current-agent">UNKNOWN</span></span>
+                <span id="security-clearance" class="clearance">CLEARANCE: <span id="current-clearance">1</span></span>
+                <button id="logout-btn" class="terminal-btn small">LOGOUT</button>
+            </div>
+        </nav>
+
+        <!-- 메인 콘텐츠 영역 -->
+        <main class="main-content">
+            <!-- 사이드바 -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3 class="section-title">NAVIGATION</h3>
+                    <ul class="nav-list">
+                        <li><button class="nav-btn active" data-view="home">HOME</button></li>
+                        <li><button class="nav-btn" data-view="recent">RECENT FILES</button></li>
+                        <li><button class="nav-btn" data-view="create">CREATE FILE</button></li>
+                        <li><button class="nav-btn" data-view="history">REVISION HISTORY</button></li>
+                    </ul>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3 class="section-title">ACTIVE AGENTS</h3>
+                    <div id="ghost-terminals" class="ghost-terminals">
+                        <div class="ghost-terminal">
+                            <span class="ghost-text">QUERYING: Case File #M-250712...</span>
+                        </div>
+                        <div class="ghost-terminal">
+                            <span class="ghost-text">ACCESSING: Classified Document #X-1989</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 메인 콘텐츠 -->
+            <div class="content-area">
+                <!-- 홈 화면 -->
+                <div id="home-view" class="view active">
+                    <div class="welcome-message">
+                        <h1>WELCOME TO TAA ARCHIVES</h1>
+                        <p>Terminal Access to Classified Information</p>
+                        <div class="quick-actions">
+                            <button class="action-btn" onclick="router.navigate('/create')">CREATE NEW FILE</button>
+                            <button class="action-btn" onclick="router.navigate('/recent')">VIEW RECENT FILES</button>
+                        </div>
+                        <!-- 관리자용 마이그레이션 버튼 -->
+                        <div id="admin-actions" class="admin-actions" style="display: none;">
+                            <h3>ADMINISTRATIVE FUNCTIONS</h3>
+                            <button id="migrate-accounts-btn" class="terminal-btn warning">MIGRATE ACCOUNTS</button>
+                        </div>
+                        
+
+                    </div>
+                </div>
+
+                <!-- 파일 생성 화면 -->
+                <div id="create-view" class="view">
+                    <div class="file-editor">
+                        <div class="editor-header">
+                            <input type="text" id="file-title" class="title-input" placeholder="FILE TITLE">
+                            <div class="editor-controls">
+                                <button id="save-btn" class="terminal-btn">SAVE</button>
+                                <button id="preview-btn" class="terminal-btn">PREVIEW</button>
+                            </div>
+                        </div>
+                        <div class="editor-content">
+                            <textarea id="file-content" class="content-textarea" placeholder="ENTER FILE CONTENT...&#10;&#10;Use [[WikiLink]] format for internal links&#10;Use # Heading for sections"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 파일 보기 화면 -->
+                <div id="file-view" class="view">
+                    <div class="file-header">
+                        <h1 id="file-display-title"></h1>
+                        <div class="file-meta">
+                            <span id="file-author"></span>
+                            <span id="file-date"></span>
+                            <span id="file-clearance"></span>
+                        </div>
+                        <div class="file-actions">
+                            <button id="edit-btn" class="terminal-btn">EDIT</button>
+                            <button id="history-btn" class="terminal-btn">HISTORY</button>
+                            <button id="discussion-btn" class="terminal-btn">DISCUSSION</button>
+                        </div>
+                    </div>
+                    
+                    <div class="file-content">
+                        <div id="table-of-contents" class="toc"></div>
+                        <div id="file-body" class="file-body"></div>
+                    </div>
+
+                    <!-- 댓글 섹션 -->
+                    <div class="comments-section">
+                        <h3>RECORD ANALYSIS</h3>
+                        <div id="comments-container"></div>
+                        <div class="comment-form">
+                            <textarea id="comment-input" class="comment-textarea" placeholder="ENTER ANALYSIS..."></textarea>
+                            <button id="submit-comment" class="terminal-btn">SUBMIT</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 최근 파일 화면 -->
+                <div id="recent-view" class="view">
+                    <h2>RECENT FILES</h2>
+                    <div id="recent-files-list" class="files-list"></div>
+                </div>
+
+                <!-- 편집 화면 -->
+                <div id="edit-view" class="view">
+                    <div class="file-editor">
+                        <div class="editor-header">
+                            <input type="text" id="edit-title" class="title-input">
+                            <div class="editor-controls">
+                                <button id="save-edit-btn" class="terminal-btn">SAVE CHANGES</button>
+                                <button id="cancel-edit-btn" class="terminal-btn">CANCEL</button>
+                            </div>
+                        </div>
+                        <div class="editor-content">
+                            <textarea id="edit-content" class="content-textarea"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 히스토리 화면 -->
+                <div id="history-view" class="view">
+                    <h2>REVISION HISTORY</h2>
+                    <div id="history-list" class="history-list"></div>
+                </div>
+
+                <!-- 논의 화면 -->
+                <div id="discussion-view" class="view">
+                    <h2>DISCUSSION</h2>
+                    <div id="discussion-container" class="discussion-container"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 오디오 요소들 -->
+    <audio id="keyboard-sound" preload="auto">
+        <source src="assets/sounds/keyboard.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="fan-sound" preload="auto" loop>
+        <source src="assets/sounds/fan.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+
+    <!-- 애플리케이션 스크립트 -->
+    <script src="js/config/firebase-config.js"></script>
+    <script src="js/utils/terminal-effects.js"></script>
+    <script src="js/utils/wiki-parser.js"></script>
+    <script src="js/utils/notification-system.js"></script>
+    <script src="js/utils/session-manager.js"></script>
+    <script src="js/utils/router.js"></script>
+    <script src="js/services/user-service.js"></script>
+    <script src="js/services/auth-service.js"></script>
+    <script src="js/services/file-service.js"></script>
+    <script src="js/services/comment-service.js"></script>
+    <script src="js/components/boot-sequence.js"></script>
+    <script src="js/components/ghost-terminals.js"></script>
+    <script src="js/components/file-editor.js"></script>
+    <script src="js/components/comments.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html> 

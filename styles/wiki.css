@@ -1,0 +1,551 @@
+/* TAA Archives - Wiki Styles */
+/* 위키 링크 및 관련 기능 스타일 */
+
+/* 위키 링크 기본 스타일 */
+.wiki-link {
+    color: #63b3ed;
+    text-decoration: none;
+    padding: 2px 4px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+    position: relative;
+    font-weight: 500;
+}
+
+.wiki-link:hover {
+    color: #FFD700;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    background-color: rgba(255, 191, 0, 0.1);
+}
+
+/* 존재하지 않는 링크 (빨간색) */
+.wiki-link.broken {
+    color: #e06c75;
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.wiki-link.broken:hover {
+    color: #FF6B6B;
+    text-decoration: none;
+    opacity: 1;
+    background-color: rgba(255, 107, 107, 0.1);
+    text-shadow: 0 0 8px rgba(255, 107, 107, 0.6);
+}
+
+/* 링크 호버 시 노이즈 효과 */
+.wiki-link:hover::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.2"/></svg>');
+    border-radius: 3px;
+    z-index: -1;
+    animation: noiseHover 0.5s ease-in-out;
+}
+
+/* 링크 클릭 효과 */
+.wiki-link:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+}
+
+/* 링크 툴팁 */
+.wiki-link[data-tooltip] {
+    position: relative;
+}
+
+.wiki-link[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-radius: 5px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #FFBF00;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 0 15px rgba(255, 191, 0, 0.3);
+    animation: tooltipFadeIn 0.3s ease-in-out;
+}
+
+@keyframes tooltipFadeIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* 링크 생성 제안 */
+.link-suggestion {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 10px 0;
+    box-shadow: 0 0 15px rgba(255, 191, 0, 0.2);
+    animation: suggestionFadeIn 0.5s ease-in-out;
+}
+
+@keyframes suggestionFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.link-suggestion h4 {
+    color: #FFBF00;
+    font-size: 14px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.link-suggestion p {
+    color: rgba(255, 191, 0, 0.8);
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+.link-suggestion .suggestion-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* 링크 목록 */
+.wiki-links-list {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 0 20px rgba(255, 191, 0, 0.1);
+}
+
+.wiki-links-list h3 {
+    color: #FFBF00;
+    font-size: 16px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #FFBF00;
+    padding-bottom: 8px;
+}
+
+.wiki-links-list ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.wiki-links-list li {
+    background: rgba(255, 191, 0, 0.05);
+    border: 1px solid rgba(255, 191, 0, 0.2);
+    border-radius: 5px;
+    padding: 8px 12px;
+    transition: all 0.3s ease;
+}
+
+.wiki-links-list li:hover {
+    background: rgba(255, 191, 0, 0.1);
+    border-color: #FFBF00;
+    box-shadow: 0 0 10px rgba(255, 191, 0, 0.3);
+}
+
+.wiki-links-list a {
+    color: #FFBF00;
+    text-decoration: none;
+    font-size: 13px;
+    display: block;
+    transition: all 0.3s ease;
+}
+
+.wiki-links-list a:hover {
+    color: #FFD700;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+/* 링크 통계 */
+.link-stats {
+    display: flex;
+    gap: 20px;
+    margin: 15px 0;
+    padding: 15px;
+    background: rgba(255, 191, 0, 0.05);
+    border-radius: 5px;
+    border: 1px solid rgba(255, 191, 0, 0.2);
+}
+
+.link-stat {
+    text-align: center;
+}
+
+.link-stat .stat-number {
+    font-size: 18px;
+    font-weight: 600;
+    color: #FFBF00;
+    display: block;
+}
+
+.link-stat .stat-label {
+    font-size: 11px;
+    color: rgba(255, 191, 0, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 링크 검색 */
+.link-search {
+    position: relative;
+    margin: 20px 0;
+}
+
+.link-search input {
+    width: 100%;
+    background-color: #000033;
+    border: 1px solid #FFBF00;
+    border-radius: 5px;
+    padding: 12px 15px;
+    color: #FFBF00;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    outline: none;
+}
+
+.link-search input::placeholder {
+    color: rgba(255, 191, 0, 0.6);
+}
+
+.link-search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 5px 15px rgba(255, 191, 0, 0.2);
+}
+
+.link-search-result {
+    padding: 10px 15px;
+    border-bottom: 1px solid rgba(255, 191, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.link-search-result:hover {
+    background: rgba(255, 191, 0, 0.1);
+}
+
+.link-search-result:last-child {
+    border-bottom: none;
+}
+
+.link-search-result .result-title {
+    color: #FFBF00;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.link-search-result .result-excerpt {
+    color: rgba(255, 191, 0, 0.7);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* 링크 편집 모드 */
+.link-edit-mode {
+    background: rgba(255, 191, 0, 0.05);
+    border: 2px solid #FFBF00;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    animation: editModeGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes editModeGlow {
+    from { box-shadow: 0 0 15px rgba(255, 191, 0, 0.2); }
+    to { box-shadow: 0 0 25px rgba(255, 191, 0, 0.4); }
+}
+
+.link-edit-mode h4 {
+    color: #FFBF00;
+    font-size: 14px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.link-edit-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.link-edit-controls button {
+    background: linear-gradient(145deg, #FFBF00, #FFD700);
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    color: #000;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.link-edit-controls button:hover {
+    background: linear-gradient(145deg, #FFD700, #FFBF00);
+    box-shadow: 0 0 10px rgba(255, 191, 0, 0.5);
+    transform: translateY(-1px);
+}
+
+/* 링크 히스토리 */
+.link-history {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 0 20px rgba(255, 191, 0, 0.1);
+}
+
+.link-history h3 {
+    color: #FFBF00;
+    font-size: 16px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #FFBF00;
+    padding-bottom: 8px;
+}
+
+.link-history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 191, 0, 0.2);
+}
+
+.link-history-item:last-child {
+    border-bottom: none;
+}
+
+.link-history-info {
+    flex: 1;
+}
+
+.link-history-title {
+    color: #FFBF00;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.link-history-meta {
+    color: rgba(255, 191, 0, 0.7);
+    font-size: 12px;
+}
+
+.link-history-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.link-history-actions button {
+    background: transparent;
+    border: 1px solid #FFBF00;
+    border-radius: 3px;
+    padding: 4px 8px;
+    color: #FFBF00;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.link-history-actions button:hover {
+    background: rgba(255, 191, 0, 0.1);
+    box-shadow: 0 0 5px rgba(255, 191, 0, 0.3);
+}
+
+/* 링크 백링크 */
+.backlinks {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 0 20px rgba(255, 191, 0, 0.1);
+}
+
+.backlinks h3 {
+    color: #FFBF00;
+    font-size: 16px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #FFBF00;
+    padding-bottom: 8px;
+}
+
+.backlink-item {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 191, 0, 0.2);
+}
+
+.backlink-item:last-child {
+    border-bottom: none;
+}
+
+.backlink-title {
+    color: #FFBF00;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.backlink-context {
+    color: rgba(255, 191, 0, 0.7);
+    font-size: 12px;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+/* 링크 카테고리 */
+.link-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 15px 0;
+}
+
+.link-category {
+    background: rgba(255, 191, 0, 0.1);
+    border: 1px solid rgba(255, 191, 0, 0.3);
+    border-radius: 15px;
+    padding: 4px 12px;
+    font-size: 11px;
+    color: #FFBF00;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.link-category:hover {
+    background: rgba(255, 191, 0, 0.2);
+    border-color: #FFBF00;
+    box-shadow: 0 0 8px rgba(255, 191, 0, 0.3);
+}
+
+/* 링크 태그 */
+.link-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 10px 0;
+}
+
+.link-tag {
+    background: rgba(255, 191, 0, 0.05);
+    border: 1px solid rgba(255, 191, 0, 0.2);
+    border-radius: 12px;
+    padding: 3px 8px;
+    font-size: 10px;
+    color: rgba(255, 191, 0, 0.8);
+    text-transform: lowercase;
+    transition: all 0.3s ease;
+}
+
+.link-tag:hover {
+    background: rgba(255, 191, 0, 0.1);
+    border-color: #FFBF00;
+    color: #FFBF00;
+}
+
+/* 링크 관련성 표시 */
+.link-relevance {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.link-relevance.high {
+    background-color: #4ECDC4;
+    box-shadow: 0 0 5px rgba(78, 205, 196, 0.5);
+}
+
+.link-relevance.medium {
+    background-color: #FFD93D;
+    box-shadow: 0 0 5px rgba(255, 217, 61, 0.5);
+}
+
+.link-relevance.low {
+    background-color: #FF6B6B;
+    box-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
+}
+
+/* 링크 접근성 표시 */
+.link-accessibility {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-left: 8px;
+    border-radius: 2px;
+    border: 1px solid #FFBF00;
+}
+
+.link-accessibility.public {
+    background-color: #4ECDC4;
+}
+
+.link-accessibility.restricted {
+    background-color: #FFD93D;
+}
+
+.link-accessibility.classified {
+    background-color: #FF6B6B;
+}
+
+/* 링크 상태 표시 */
+.link-status {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 8px;
+}
+
+.link-status.active {
+    background-color: rgba(78, 205, 196, 0.2);
+    color: #4ECDC4;
+    border: 1px solid #4ECDC4;
+}
+
+.link-status.draft {
+    background-color: rgba(255, 217, 61, 0.2);
+    color: #FFD93D;
+    border: 1px solid #FFD93D;
+}
+
+.link-status.archived {
+    background-color: rgba(255, 107, 107, 0.2);
+    color: #FF6B6B;
+    border: 1px solid #FF6B6B;
+} 

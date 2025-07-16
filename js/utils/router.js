@@ -1,0 +1,295 @@
+// TAA Archives - Client-side Router
+// History API를 사용한 클라이언트 사이드 라우팅
+
+class Router {
+    constructor() {
+        this.routes = new Map();
+        this.currentRoute = null;
+        this.defaultRoute = '/';
+        
+        // 라우트 정의
+        this.defineRoutes();
+        
+        // 이벤트 리스너 설정
+        this.setupEventListeners();
+        
+        // 초기 라우트 처리
+        this.handleInitialRoute();
+    }
+
+    // 라우트 정의
+    defineRoutes() {
+        // 홈 페이지
+        this.addRoute('/', {
+            title: 'TAA Archives - Home',
+            view: 'home',
+            handler: () => this.showHomeView()
+        });
+
+        // 문서 페이지
+        this.addRoute('/article/:id', {
+            title: 'TAA Archives - Document',
+            view: 'file',
+            handler: (params) => this.showArticleView(params.id)
+        });
+
+        // 파일 생성 페이지
+        this.addRoute('/create', {
+            title: 'TAA Archives - Create Document',
+            view: 'create',
+            handler: () => this.showCreateView()
+        });
+
+        // 최근 파일 페이지
+        this.addRoute('/recent', {
+            title: 'TAA Archives - Recent Files',
+            view: 'recent',
+            handler: () => this.showRecentView()
+        });
+
+        // 히스토리 페이지
+        this.addRoute('/history', {
+            title: 'TAA Archives - History',
+            view: 'history',
+            handler: () => this.showHistoryView()
+        });
+
+        // 편집 페이지
+        this.addRoute('/edit/:id', {
+            title: 'TAA Archives - Edit Document',
+            view: 'edit',
+            handler: (params) => this.showEditView(params.id)
+        });
+
+        // 논의 페이지
+        this.addRoute('/discussion/:id', {
+            title: 'TAA Archives - Discussion',
+            view: 'discussion',
+            handler: (params) => this.showDiscussionView(params.id)
+        });
+    }
+
+    // 라우트 추가
+    addRoute(path, config) {
+        this.routes.set(path, config);
+    }
+
+    // 이벤트 리스너 설정
+    setupEventListeners() {
+        // 브라우저 뒤로가기/앞으로가기 처리
+        window.addEventListener('popstate', (event) => {
+            this.handleRouteChange();
+        });
+
+        // 페이지 로드 시 라우트 처리
+        window.addEventListener('load', () => {
+            this.handleRouteChange();
+        });
+    }
+
+    // 초기 라우트 처리
+    handleInitialRoute() {
+        const path = window.location.pathname;
+        if (path === '/' || path === '') {
+            // 홈 페이지인 경우 세션 상태 확인
+            if (window.sessionManager && window.sessionManager.isLoggedIn()) {
+                // 로그인된 상태면 홈으로, 아니면 로그인 화면으로
+                this.navigate('/');
+            } else {
+                // 로그인되지 않은 상태면 현재 URL 유지 (부팅 시퀀스 처리)
+                return;
+            }
+        } else {
+            // 특정 경로로 직접 접속한 경우
+            this.handleRouteChange();
+        }
+    }
+
+    // 라우트 변경 처리
+    handleRouteChange() {
+        const path = window.location.pathname;
+        const route = this.findRoute(path);
+        
+        if (route) {
+            this.currentRoute = route;
+            this.updatePageTitle(route.title);
+            this.executeRouteHandler(route, path);
+        } else {
+            // 404 처리
+            this.handleNotFound();
+        }
+    }
+
+    // 라우트 찾기
+    findRoute(path) {
+        for (const [routePath, config] of this.routes) {
+            if (this.matchRoute(routePath, path)) {
+                return {
+                    path: routePath,
+                    config: config,
+                    params: this.extractParams(routePath, path)
+                };
+            }
+        }
+        return null;
+    }
+
+    // 라우트 매칭
+    matchRoute(routePath, currentPath) {
+        if (routePath === currentPath) {
+            return true;
+        }
+
+        // 파라미터가 있는 라우트 매칭
+        const routeParts = routePath.split('/');
+        const currentParts = currentPath.split('/');
+
+        if (routeParts.length !== currentParts.length) {
+            return false;
+        }
+
+        for (let i = 0; i < routeParts.length; i++) {
+            if (routeParts[i].startsWith(':')) {
+                // 파라미터 부분은 무시
+                continue;
+            }
+            if (routeParts[i] !== currentParts[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // 파라미터 추출
+    extractParams(routePath, currentPath) {
+        const params = {};
+        const routeParts = routePath.split('/');
+        const currentParts = currentPath.split('/');
+
+        for (let i = 0; i < routeParts.length; i++) {
+            if (routeParts[i].startsWith(':')) {
+                const paramName = routeParts[i].substring(1);
+                params[paramName] = currentParts[i];
+            }
+        }
+
+        return params;
+    }
+
+    // 라우트 핸들러 실행
+    executeRouteHandler(route, path) {
+        try {
+            // 메인 앱이 로드되었는지 확인
+            if (window.taaApp) {
+                // 뷰 전환 (URL 업데이트 없이)
+                if (route.config.view) {
+                    window.taaApp.showViewWithoutRoute(route.config.view);
+                }
+                
+                // 라우트별 핸들러 실행
+                if (route.config.handler) {
+                    route.config.handler(route.params);
+                }
+            } else {
+                // 메인 앱이 아직 로드되지 않은 경우 세션에 저장
+                if (window.sessionManager) {
+                    sessionManager.setPendingRoute(path);
+                }
+            }
+        } catch (error) {
+            console.error('Route handler error:', error);
+            this.handleNotFound();
+        }
+    }
+
+    // 페이지 제목 업데이트
+    updatePageTitle(title) {
+        document.title = title;
+    }
+
+    // 404 처리
+    handleNotFound() {
+        console.log('Page not found:', window.location.pathname);
+        this.navigate('/');
+    }
+
+    // 네비게이션
+    navigate(path, replace = false) {
+        if (replace) {
+            window.history.replaceState(null, '', path);
+        } else {
+            window.history.pushState(null, '', path);
+        }
+        this.handleRouteChange();
+    }
+
+    // 홈 뷰 표시
+    showHomeView() {
+        if (window.taaApp) {
+            window.taaApp.showViewWithoutRoute('home');
+        }
+    }
+
+    // 문서 뷰 표시
+    showArticleView(articleId) {
+        if (window.taaApp && window.fileService) {
+            window.taaApp.loadFile(articleId);
+        }
+    }
+
+    // 생성 뷰 표시
+    showCreateView() {
+        if (window.taaApp) {
+            window.taaApp.showViewWithoutRoute('create');
+        }
+    }
+
+    // 최근 파일 뷰 표시
+    showRecentView() {
+        if (window.taaApp) {
+            window.taaApp.showViewWithoutRoute('recent');
+        }
+    }
+
+    // 히스토리 뷰 표시
+    showHistoryView() {
+        if (window.taaApp) {
+            window.taaApp.showViewWithoutRoute('history');
+        }
+    }
+
+    // 편집 뷰 표시
+    showEditView(articleId) {
+        if (window.taaApp && window.fileService) {
+            window.taaApp.loadFile(articleId).then(() => {
+                window.taaApp.editFile();
+            });
+        }
+    }
+
+    // 논의 뷰 표시
+    showDiscussionView(articleId) {
+        if (window.taaApp && window.fileService) {
+            window.taaApp.loadFile(articleId).then(() => {
+                window.taaApp.showView('discussion');
+            });
+        }
+    }
+
+    // 현재 라우트 정보 반환
+    getCurrentRoute() {
+        return this.currentRoute;
+    }
+
+    // 현재 경로 반환
+    getCurrentPath() {
+        return window.location.pathname;
+    }
+}
+
+// 전역 인스턴스 생성
+const router = new Router();
+window.router = router;
+
+console.log('TAA Archives: Router initialized'); 

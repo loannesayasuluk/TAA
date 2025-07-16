@@ -1,0 +1,199 @@
+/* Notification System Styles */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    pointer-events: none;
+}
+
+.notification {
+    background: rgba(0, 20, 40, 0.95);
+    border: 1px solid #ffa500;
+    border-left: 4px solid #ffa500;
+    color: #ffa500;
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    min-width: 300px;
+    max-width: 400px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    box-shadow: 0 4px 12px rgba(255, 165, 0, 0.3);
+    transform: translateX(100%);
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.notification.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.notification-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.notification-message {
+    flex: 1;
+    line-height: 1.4;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: #ffa500;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.notification-close:hover {
+    color: #ff6b35;
+}
+
+.notification-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: #ffa500;
+    width: 100%;
+    transition: width 5s linear;
+}
+
+/* Notification Types */
+.notification-success {
+    border-color: #00ff00;
+    border-left-color: #00ff00;
+    color: #00ff00;
+    box-shadow: 0 4px 12px rgba(0, 255, 0, 0.3);
+}
+
+.notification-success .notification-close {
+    color: #00ff00;
+}
+
+.notification-success .notification-close:hover {
+    color: #00cc00;
+}
+
+.notification-success .notification-progress {
+    background: #00ff00;
+}
+
+.notification-error {
+    border-color: #ff0000;
+    border-left-color: #ff0000;
+    color: #ff0000;
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
+}
+
+.notification-error .notification-close {
+    color: #ff0000;
+}
+
+.notification-error .notification-close:hover {
+    color: #cc0000;
+}
+
+.notification-error .notification-progress {
+    background: #ff0000;
+}
+
+.notification-warning {
+    border-color: #ffff00;
+    border-left-color: #ffff00;
+    color: #ffff00;
+    box-shadow: 0 4px 12px rgba(255, 255, 0, 0.3);
+}
+
+.notification-warning .notification-close {
+    color: #ffff00;
+}
+
+.notification-warning .notification-close:hover {
+    color: #cccc00;
+}
+
+.notification-warning .notification-progress {
+    background: #ffff00;
+}
+
+.notification-info {
+    border-color: #00ffff;
+    border-left-color: #00ffff;
+    color: #00ffff;
+    box-shadow: 0 4px 12px rgba(0, 255, 255, 0.3);
+}
+
+.notification-info .notification-close {
+    color: #00ffff;
+}
+
+.notification-info .notification-close:hover {
+    color: #00cccc;
+}
+
+.notification-info .notification-progress {
+    background: #00ffff;
+}
+
+/* CRT 효과 적용 */
+.notification::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        transparent 50%,
+        rgba(255, 165, 0, 0.02) 50%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    animation: scanline 0.1s linear infinite;
+}
+
+@keyframes scanline {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(4px);
+    }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .notification-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+    }
+    
+    .notification {
+        min-width: auto;
+        max-width: none;
+        width: 100%;
+    }
+}
+
+/* 다크 모드 지원 */
+@media (prefers-color-scheme: dark) {
+    .notification {
+        background: rgba(0, 10, 20, 0.98);
+    }
+} 
