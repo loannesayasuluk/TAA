@@ -273,32 +273,156 @@
 
                 <!-- 포럼 메인 화면 -->
                 <div id="forums-main-view" class="view">
-                    <!-- 포럼 메인 컴포넌트가 여기에 로드됩니다 -->
+                    <div class="forums-header">
+                        <h1>에이전트 포럼</h1>
+                        <p>정보 공유 및 토론을 위한 협업 공간</p>
+                        <div class="forums-actions">
+                            <button id="refresh-channels-btn" class="terminal-btn">새로고침</button>
+                            <button id="create-channel-btn" class="terminal-btn">채널 생성</button>
+                        </div>
+                    </div>
+                    
+                    <div class="forums-content">
+                        <div class="channels-section">
+                            <div class="channels-header">
+                                <h2>채널 목록</h2>
+                                <div class="channels-search">
+                                    <input type="text" id="channels-search" class="search-input" placeholder="채널 검색...">
+                                </div>
+                            </div>
+                            <div id="channels-grid" class="channels-grid">
+                                <!-- 채널 카드들이 여기에 로드됩니다 -->
+                            </div>
+                        </div>
+                        
+                        <div class="forums-sidebar">
+                            <div class="sidebar-section">
+                                <h3>포럼 통계</h3>
+                                <div class="stats-list">
+                                    <div class="stat-item">
+                                        <span class="stat-label">총 채널</span>
+                                        <span class="stat-value" id="total-channels">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">총 스레드</span>
+                                        <span class="stat-value" id="total-threads">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">총 댓글</span>
+                                        <span class="stat-value" id="total-comments">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="sidebar-section">
+                                <h3>최근 활동</h3>
+                                <div class="recent-activity" id="recent-activity">
+                                    <!-- 최근 활동이 여기에 로드됩니다 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- 채널 화면 -->
-                <div id="channel-view" class="view">
-                    <!-- 채널 컴포넌트가 여기에 로드됩니다 -->
+                <!-- 채널 페이지 화면 -->
+                <div id="channel-page-view" class="view">
+                    <div class="channel-header">
+                        <div class="channel-info">
+                            <h1 class="channel-title">#채널명</h1>
+                            <p class="channel-description">채널 설명</p>
+                        </div>
+                        <div class="channel-actions">
+                            <button id="create-thread-btn" class="terminal-btn">새 스레드 생성</button>
+                        </div>
+                    </div>
+                    
+                    <div class="threads-container">
+                        <div class="threads-header">
+                            <h2>스레드 목록</h2>
+                            <div class="thread-filters">
+                                <input type="text" id="threads-search" class="search-input" placeholder="스레드 검색...">
+                                <select id="threads-sort" class="terminal-input">
+                                    <option value="newest">최신순</option>
+                                    <option value="oldest">오래된순</option>
+                                    <option value="votes">추천순</option>
+                                    <option value="comments">댓글순</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="threads-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th class="status-col">상태</th>
+                                        <th class="title-col">제목</th>
+                                        <th class="agent-col">작성자</th>
+                                        <th class="timestamp-col">작성일</th>
+                                        <th class="votes-col">추천</th>
+                                        <th class="replies-col">댓글</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="threads-table">
+                                    <!-- 스레드 목록이 여기에 로드됩니다 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- 스레드 화면 -->
-                <div id="thread-view" class="view">
-                    <!-- 스레드 컴포넌트가 여기에 로드됩니다 -->
+                <!-- 스레드 페이지 화면 -->
+                <div id="thread-page-view" class="view">
+                    <div id="thread-content">
+                        <!-- 스레드 내용이 여기에 로드됩니다 -->
+                    </div>
+                    
+                    <div class="comments-section">
+                        <h2>댓글</h2>
+                        <div class="comment-form">
+                            <textarea id="comment-content" class="comment-textarea" placeholder="댓글을 입력하세요..."></textarea>
+                            <button id="submit-comment-btn" class="terminal-btn">댓글 작성</button>
+                        </div>
+                        <div id="comments-list">
+                            <!-- 댓글 목록이 여기에 로드됩니다 -->
+                        </div>
+                    </div>
                 </div>
 
                 <!-- 스레드 생성 화면 -->
                 <div id="create-thread-view" class="view">
                     <div class="thread-editor">
                         <div class="editor-header">
-                            <input type="text" id="thread-title" class="title-input" placeholder="스레드 제목">
+                            <div class="channel-info">
+                                <h2>#채널명</h2>
+                                <p>채널 설명</p>
+                            </div>
                             <div class="editor-controls">
-                                <button id="create-thread-btn" class="terminal-btn">스레드 생성</button>
-                                <button id="preview-thread-btn" class="terminal-btn">미리보기</button>
+                                <button id="preview-btn" class="terminal-btn">미리보기</button>
+                                <button id="clear-draft-btn" class="terminal-btn">초안 삭제</button>
+                                <button id="cancel-btn" class="terminal-btn">취소</button>
                             </div>
                         </div>
-                        <div class="editor-content">
-                            <textarea id="thread-content" class="content-textarea" placeholder="스레드 내용을 입력하세요...&#10;&#10;섹션은 # 제목 형식을 사용하세요&#10;강조는 **굵게** 형식을 사용하세요&#10;코드는 `코드` 형식을 사용하세요"></textarea>
+                        
+                        <div id="draft-notification" class="draft-notification" style="display: none;">
+                            <span>📝 이전에 작성 중이던 내용이 있습니다.</span>
                         </div>
+                        
+                        <form id="create-thread-form" class="editor-content">
+                            <div class="input-group">
+                                <label for="thread-title">제목</label>
+                                <input type="text" id="thread-title" class="title-input" placeholder="스레드 제목을 입력하세요..." required>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="thread-content">내용</label>
+                                <textarea id="thread-content" class="content-textarea" placeholder="스레드 내용을 입력하세요...&#10;&#10;마크다운 형식을 지원합니다:&#10;# 제목&#10;**굵게**&#10;*기울임*&#10;`코드`" required></textarea>
+                                <div id="preview-area" class="preview-area" style="display: none;"></div>
+                            </div>
+                            
+                            <div class="editor-actions">
+                                <button type="submit" id="submit-btn" class="terminal-btn">스레드 생성</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
 

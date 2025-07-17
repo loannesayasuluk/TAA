@@ -13,6 +13,8 @@ class ForumsMain {
         this.itemsPerPage = 10;
         this.isLoadingMore = false;
         this.language = this.getLanguage();
+        this.unsubscribe = null;
+        this.forumService = window.forumService;
         
         this.init();
     }
@@ -37,6 +39,30 @@ class ForumsMain {
         // 채널 클릭 이벤트는 동적으로 추가됨
         // 키보드 네비게이션 설정
         this.setupKeyboardNavigation();
+
+        // 검색 기능
+        const searchInput = this.container.querySelector('#channels-search');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                this.filterChannels(e.target.value);
+            });
+        }
+
+        // 새로고침 버튼
+        const refreshBtn = this.container.querySelector('#refresh-channels-btn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => {
+                this.loadChannels();
+            });
+        }
+
+        // 관리자용 채널 생성 버튼
+        const createChannelBtn = this.container.querySelector('#create-channel-btn');
+        if (createChannelBtn) {
+            createChannelBtn.addEventListener('click', () => {
+                this.showCreateChannelModal();
+            });
+        }
     }
 
     // 채널 목록 로드
@@ -104,13 +130,23 @@ class ForumsMain {
 
             this.filteredChannels = [...this.channels];
 
+            // 기존 구독 해제
+            if (this.unsubscribe) {
+                this.unsubscribe();
+            }
+
+            // 실시간 리스너 설정
+            this.unsubscribe = this.forumService.subscribeToChannels((channels) => {
+                this.channels = channels;
+                this.render();
+                this.hideLoading();
+            });
+
             this.render();
             this.measurePerformance('loadChannels', startTime);
         } catch (error) {
             console.error('ForumsMain: Error loading channels:', error);
             this.showError('채널 목록을 불러오는데 실패했습니다.');
-        } finally {
-            this.isLoading = false;
             this.hideLoading();
         }
     }
@@ -246,14 +282,11 @@ class ForumsMain {
         
         channelCards.forEach(card => {
             card.addEventListener('click', (e) => {
-                const channelId = card.dataset.channelId;
-                const channel = this.channels.find(ch => ch.id === channelId);
+                // 버튼 클릭이 아닌 카드 클릭만 처리
+                if (e.target.tagName === 'BUTTON') return;
                 
-                if (channel && this.canAccessChannel(channel)) {
-                    this.navigateToChannel(channelId);
-                } else if (channel) {
-                    this.showAccessDenied();
-                }
+                const channelId = card.dataset.channelId;
+                this.navigateToChannel(channelId);
             });
         });
     }
@@ -354,6 +387,9 @@ class ForumsMain {
     // 컴포넌트 정리
     cleanup() {
         // 이벤트 리스너 정리
+        if (this.unsubscribe) {
+            this.unsubscribe();
+        }
     }
 
     // 새로운 스레드 생성 버튼 설정
@@ -723,6 +759,65 @@ class ForumsMain {
         } catch (error) {
             console.error('Performance test failed:', error);
             return false;
+        }
+    }
+
+    // 채널 생성 모달 표시
+    showCreateChannelModal() {
+        // 간단한 모달 구현
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h3>새 채널 생성</h3>
+                <form id="create-channel-form">
+                    <div class="form-group">
+                        <label for="channel-name">채널 이름:</label>
+                        <input type="text" id="channel-name" class="terminal-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="channel-description">설명:</label>
+                        <textarea id="channel-description" class="terminal-input" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="channel-order">순서:</label>
+                        <input type="number" id="channel-order" class="terminal-input" value="1" min="1">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="terminal-btn">생성</button>
+                        <button type="button" class="terminal-btn" onclick="this.closeModal()">취소</button>
+                    </div>
+                </form>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // 폼 제출 처리
+        const form = modal.querySelector('#create-channel-form');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = modal.querySelector('#channel-name').value;
+            const description = modal.querySelector('#channel-description').value;
+            const order = parseInt(modal.querySelector('#channel-order').value);
+
+            try {
+                await this.forumService.createChannel({ name, description, order });
+                this.closeModal();
+                showNotification('채널이 성공적으로 생성되었습니다.', 'success');
+            } catch (error) {
+                console.error('Error creating channel:', error);
+                showNotification('채널 생성에 실패했습니다.', 'error');
+            }
+        });
+    }
+
+    // 모달 닫기
+    closeModal() {
+        const modal = document.querySelector('.modal-overlay');
+        if (modal) {
+            modal.remove();
         }
     }
 }

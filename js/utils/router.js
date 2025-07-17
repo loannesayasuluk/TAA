@@ -419,6 +419,7 @@ class Router {
 
     // 포럼 메인 페이지 표시
     showForumsMainView() {
+        this.showView('forums-main-view');
         if (window.forumsMain) {
             window.forumsMain.loadChannels();
         }
@@ -426,6 +427,7 @@ class Router {
 
     // 채널 페이지 표시
     showChannelView(channelId) {
+        this.showView('channel-page-view');
         if (window.channelPage) {
             window.channelPage.loadChannel(channelId);
         }
@@ -433,6 +435,7 @@ class Router {
 
     // 스레드 페이지 표시
     showThreadView(channelId, threadId) {
+        this.showView('thread-page-view');
         if (window.threadPage) {
             window.threadPage.loadThread(channelId, threadId);
         }
@@ -440,8 +443,10 @@ class Router {
 
     // 스레드 생성 페이지 표시
     showCreateThreadView(channelId) {
-        // 스레드 생성 페이지 초기화
-        window.currentChannelId = channelId;
+        this.showView('create-thread-view');
+        if (window.createThread) {
+            window.createThread.setChannel(channelId);
+        }
     }
 
     // 현재 라우트 정보 반환
