@@ -11,6 +11,9 @@ class TAAApp {
 
     // 애플리케이션 초기화
     async initApp() {
+        // 세션 상태 확인 및 초기화
+        await this.initializeSession();
+        
         this.setupEventListeners();
         this.setupNavigation();
         this.setupSearch();
@@ -22,6 +25,107 @@ class TAAApp {
         if (window.authService && window.authService.getCurrentUser()) {
             await this.checkMigrationStatus();
         }
+    }
+
+    // 세션 상태 초기화 및 복원
+    async initializeSession() {
+        // 세션 매니저가 로드될 때까지 대기
+        let attempts = 0;
+        while (!window.sessionManager && attempts < 50) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+
+        if (!window.sessionManager) {
+            console.error('Session manager not found');
+            return;
+        }
+
+        const sessionInfo = window.sessionManager.getSessionInfo();
+        console.log('Session info:', sessionInfo);
+
+        // 로그인된 상태이고 부팅이 완료된 경우
+        if (sessionInfo.isLoggedIn && sessionInfo.bootCompleted) {
+            console.log('User is logged in and boot completed - showing main app directly');
+            this.showMainAppDirectly();
+            return;
+        }
+
+        // 로그인된 상태이지만 부팅이 완료되지 않은 경우
+        if (sessionInfo.isLoggedIn && !sessionInfo.bootCompleted) {
+            console.log('User is logged in but boot not completed - completing boot');
+            window.sessionManager.setBootCompleted();
+            this.showMainAppDirectly();
+            return;
+        }
+
+        // 로그인되지 않은 상태 - 부팅 시퀀스 실행
+        console.log('User not logged in - starting boot sequence');
+        this.startBootSequence();
+    }
+
+    // 메인 앱 직접 표시 (부팅 시퀀스 건너뛰기)
+    showMainAppDirectly() {
+        // 부팅 화면 숨기기
+        const bootScreen = document.getElementById('boot-sequence');
+        if (bootScreen) {
+            bootScreen.classList.add('hidden');
+        }
+
+        // 로그인/회원가입 화면 숨기기
+        const loginScreen = document.getElementById('login-screen');
+        const registerScreen = document.getElementById('register-screen');
+        if (loginScreen) loginScreen.classList.add('hidden');
+        if (registerScreen) registerScreen.classList.add('hidden');
+
+        // 메인 앱 표시
+        const mainApp = document.getElementById('main-app');
+        if (mainApp) {
+            mainApp.classList.remove('hidden');
+            mainApp.style.opacity = '1';
+        }
+
+        // 현재 경로 복원
+        this.restoreCurrentRoute();
+    }
+
+    // 현재 경로 복원
+    restoreCurrentRoute() {
+        const currentPath = window.location.pathname;
+        console.log('Restoring route:', currentPath);
+
+        // 라우터가 로드될 때까지 대기
+        let attempts = 0;
+        const checkRouter = () => {
+            if (window.router) {
+                // 현재 경로가 홈이 아닌 경우 해당 경로로 이동
+                if (currentPath !== '/' && currentPath !== '') {
+                    window.router.navigate(currentPath, true);
+                } else {
+                    // 홈 페이지인 경우 홈 뷰 초기화
+                    this.initializeHomeView();
+                }
+            } else if (attempts < 50) {
+                attempts++;
+                setTimeout(checkRouter, 100);
+            }
+        };
+        checkRouter();
+    }
+
+    // 부팅 시퀀스 시작
+    startBootSequence() {
+        // 부팅 시퀀스가 로드될 때까지 대기
+        let attempts = 0;
+        const checkBootSequence = () => {
+            if (window.bootSequence) {
+                window.bootSequence.start();
+            } else if (attempts < 50) {
+                attempts++;
+                setTimeout(checkBootSequence, 100);
+            }
+        };
+        checkBootSequence();
     }
 
     // 이벤트 리스너 설정

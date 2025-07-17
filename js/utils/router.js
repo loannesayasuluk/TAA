@@ -132,6 +132,27 @@ class Router {
     // 초기 라우트 처리
     handleInitialRoute() {
         const path = window.location.pathname;
+        
+        // 세션 매니저가 있는지 확인
+        if (window.sessionManager) {
+            const sessionInfo = window.sessionManager.getSessionInfo();
+            
+            // 로그인된 상태인 경우
+            if (sessionInfo.isLoggedIn) {
+                console.log('User is logged in, handling route:', path);
+                
+                if (path === '/' || path === '') {
+                    // 홈 페이지인 경우 홈으로 이동
+                    this.navigate('/');
+                } else {
+                    // 특정 경로로 직접 접속한 경우 해당 경로 처리
+                    this.handleRouteChange();
+                }
+                return;
+            }
+        }
+        
+        // 로그인되지 않은 상태이거나 세션 매니저가 없는 경우
         if (path === '/' || path === '') {
             // 홈 페이지인 경우 세션 상태 확인
             if (window.sessionManager && window.sessionManager.isLoggedIn()) {

@@ -394,6 +394,7 @@ class AuthService {
         if (window.sessionManager) {
             sessionManager.setLoggedIn();
             sessionManager.setCurrentScreen('main');
+            sessionManager.setBootCompleted(); // 부팅 완료 상태 설정
         }
         
         // 관리자 기능 숨기기 (일반 사용자는 관리자 기능에 접근 불가)
