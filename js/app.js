@@ -1,6 +1,60 @@
 // TAA Archives - Main Application
 // 메인 애플리케이션 로직 및 이벤트 처리
 
+// --- 페이지 새로고침 진단 시작 ---
+console.log('--- 페이지 새로고침 진단 시작 ---');
+console.log('현재 경로:', window.location.pathname);
+console.log('세션 스토리지 토큰:', sessionStorage.getItem('authToken'));
+console.log('로컬 스토리지 토큰:', localStorage.getItem('authToken'));
+console.log('--- 진단 끝 ---');
+
+// 즉시 세션 확인 및 강제 초기화
+const activeSessionToken = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
+
+if (activeSessionToken) {
+    // 토큰이 존재하면: 기억을 되살리는 과정
+    console.log('활성 세션 발견. 부팅 시퀀스를 건너뛰고 메인 앱으로 즉시 진입합니다.');
+
+    // 1. 부팅 및 로그인 화면을 강제로 숨김
+    const bootScreen = document.getElementById('boot-sequence');
+    const loginScreen = document.getElementById('login-screen');
+    const registerScreen = document.getElementById('register-screen');
+    
+    if (bootScreen) {
+        bootScreen.style.display = 'none';
+        bootScreen.classList.add('hidden');
+    }
+    if (loginScreen) {
+        loginScreen.style.display = 'none';
+        loginScreen.classList.add('hidden');
+    }
+    if (registerScreen) {
+        registerScreen.style.display = 'none';
+        registerScreen.classList.add('hidden');
+    }
+
+    // 2. 메인 앱 화면을 강제로 표시
+    const mainAppScreen = document.getElementById('main-app');
+    if (mainAppScreen) {
+        mainAppScreen.style.display = 'block';
+        mainAppScreen.classList.remove('hidden');
+        mainAppScreen.style.opacity = '1';
+    }
+
+    // 3. 앱과 라우터가 초기화된 후, 원래 경로로 이동하도록 이벤트 설정
+    window.addEventListener('appInitialized', () => {
+        const intendedPath = window.location.pathname;
+        console.log(`앱 초기화 완료. 원래 경로인 '${intendedPath}'로 이동을 시도합니다.`);
+        if (intendedPath && intendedPath !== '/' && window.router) {
+            window.router.navigate(intendedPath, true);
+        }
+    });
+
+} else {
+    // 토큰이 없으면: 정상적인 부팅 시퀀스 진행
+    console.log('활성 세션 없음. 정상적인 부팅 시퀀스를 시작합니다.');
+}
+
 class TAAApp {
     constructor() {
         this.currentView = 'home';
@@ -1132,7 +1186,7 @@ console.log('TAA Archives: Main application initialized');
 
 // DOM이 로드된 후 부팅 시퀀스 초기화
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, initializing boot sequence...');
+    console.log('DOM loaded, checking if boot sequence is needed...');
     
     // 모든 필수 컴포넌트가 로드되었는지 확인
     const requiredComponents = [
@@ -1148,19 +1202,31 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn('Missing components:', missingComponents);
         // 1초 후 다시 시도
         setTimeout(() => {
-            if (window.bootSequence) {
-                console.log('Retrying boot sequence initialization...');
-                window.bootSequence.start();
+            if (window.bootSequence && window.sessionManager) {
+                console.log('Retrying boot sequence check...');
+                const shouldShow = window.sessionManager.shouldShowBootSequence();
+                if (shouldShow) {
+                    window.bootSequence.start();
+                } else {
+                    window.bootSequence.skipBootSequence();
+                }
             } else {
-                console.error('Boot sequence still not available');
+                console.error('Required components still not available');
             }
         }, 1000);
     } else {
-        console.log('All components loaded, starting boot sequence...');
-        if (window.bootSequence) {
-            window.bootSequence.start();
+        console.log('All components loaded, checking boot sequence...');
+        if (window.bootSequence && window.sessionManager) {
+            const shouldShow = window.sessionManager.shouldShowBootSequence();
+            if (shouldShow) {
+                console.log('Starting boot sequence...');
+                window.bootSequence.start();
+            } else {
+                console.log('Skipping boot sequence...');
+                window.bootSequence.skipBootSequence();
+            }
         } else {
-            console.error('Boot sequence not available');
+            console.error('Boot sequence or session manager not available');
         }
     }
 });
@@ -1169,9 +1235,19 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('load', () => {
     console.log('All resources loaded, checking boot sequence...');
     setTimeout(() => {
-        if (window.bootSequence && !window.bootSequence.isRunning) {
-            console.log('Starting boot sequence from app.js');
-            window.bootSequence.start();
+        if (window.bootSequence && window.sessionManager && !window.bootSequence.isRunning) {
+            const shouldShow = window.sessionManager.shouldShowBootSequence();
+            if (shouldShow) {
+                console.log('Starting boot sequence from app.js load event');
+                window.bootSequence.start();
+            } else {
+                console.log('Skipping boot sequence from app.js load event');
+                window.bootSequence.skipBootSequence();
+            }
         }
+        
+        // 앱 초기화 완료 신호 전송
+        console.log('Sending appInitialized event...');
+        window.dispatchEvent(new CustomEvent('appInitialized'));
     }, 500);
 }); 

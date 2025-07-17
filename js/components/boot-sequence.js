@@ -655,12 +655,5 @@ function initializeBootSequence() {
 
 console.log('TAA Archives: Boot sequence component initialized');
 
-// 즉시 부팅 시퀀스 시작 (간단한 방법)
-setTimeout(() => {
-    console.log('Starting boot sequence immediately...');
-    if (window.bootSequence) {
-        bootSequence.start();
-    } else {
-        console.error('Boot sequence not found');
-    }
-}, 1000); 
+// 부팅 시퀀스는 app.js에서 제어하므로 여기서는 자동 시작하지 않음
+console.log('Boot sequence component loaded - waiting for app.js to control initialization'); 

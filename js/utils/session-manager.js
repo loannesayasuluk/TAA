@@ -96,13 +96,21 @@ class SessionManager {
         const bootCompleted = this.isBootCompleted();
         const currentScreen = this.getCurrentScreen();
         const isLoggedIn = this.isLoggedIn();
+        const savedToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
         
         console.log('=== Session Debug Info ===');
         console.log('Boot completed:', bootCompleted);
         console.log('Current screen:', currentScreen);
         console.log('Is logged in:', isLoggedIn);
+        console.log('Saved token exists:', !!savedToken);
         console.log('Session valid:', this.isSessionValid());
         console.log('Page refresh:', this.isPageRefresh());
+        
+        // 저장된 토큰이 있으면 부팅 시퀀스 건너뛰기
+        if (savedToken) {
+            console.log('Saved token found - skipping boot sequence');
+            return false;
+        }
         
         // 로그인된 상태이고 메인 화면이면 부팅 시퀀스 건너뛰기
         if (isLoggedIn && currentScreen === 'main') {
@@ -113,6 +121,13 @@ class SessionManager {
         // 부팅이 완료되었으면 부팅 시퀀스 건너뛰기
         if (bootCompleted) {
             console.log('Boot completed - skipping boot sequence');
+            return false;
+        }
+        
+        // 현재 경로가 홈이 아닌 경우 (특정 페이지에 있는 경우) 부팅 시퀀스 건너뛰기
+        const currentPath = window.location.pathname;
+        if (currentPath !== '/' && currentPath !== '') {
+            console.log('On specific page - skipping boot sequence');
             return false;
         }
         

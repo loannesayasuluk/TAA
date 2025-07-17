@@ -132,14 +132,18 @@ class Router {
     // 초기 라우트 처리
     handleInitialRoute() {
         const path = window.location.pathname;
+        console.log('Router: Handling initial route:', path);
+        
+        // 저장된 토큰 확인
+        const savedToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
         
         // 세션 매니저가 있는지 확인
         if (window.sessionManager) {
             const sessionInfo = window.sessionManager.getSessionInfo();
             
             // 로그인된 상태인 경우
-            if (sessionInfo.isLoggedIn) {
-                console.log('User is logged in, handling route:', path);
+            if (sessionInfo.isLoggedIn || savedToken) {
+                console.log('User is logged in or has saved token, handling route:', path);
                 
                 if (path === '/' || path === '') {
                     // 홈 페이지인 경우 홈으로 이동
@@ -155,15 +159,17 @@ class Router {
         // 로그인되지 않은 상태이거나 세션 매니저가 없는 경우
         if (path === '/' || path === '') {
             // 홈 페이지인 경우 세션 상태 확인
-            if (window.sessionManager && window.sessionManager.isLoggedIn()) {
+            if ((window.sessionManager && window.sessionManager.isLoggedIn()) || savedToken) {
                 // 로그인된 상태면 홈으로, 아니면 로그인 화면으로
                 this.navigate('/');
             } else {
                 // 로그인되지 않은 상태면 현재 URL 유지 (부팅 시퀀스 처리)
+                console.log('User not logged in, keeping current URL for boot sequence');
                 return;
             }
         } else {
             // 특정 경로로 직접 접속한 경우
+            console.log('Direct access to specific route:', path);
             this.handleRouteChange();
         }
     }

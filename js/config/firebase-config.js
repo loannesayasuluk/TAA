@@ -39,4 +39,19 @@ window.db = db;
 window.auth = auth;
 window.firebaseConfig = firebaseConfig;
 
+// 저장된 토큰 복원 시도
+const savedToken = localStorage.getItem('authToken');
+if (savedToken) {
+    console.log('Saved auth token found, attempting to restore session...');
+    // Firebase Auth는 자동으로 토큰을 검증하고 사용자 상태를 복원합니다
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            console.log('Session restored successfully for user:', user.email);
+        } else {
+            console.log('Saved token is invalid, removing from storage');
+            localStorage.removeItem('authToken');
+        }
+    });
+}
+
 console.log('TAA Archives: Firebase initialized successfully'); 

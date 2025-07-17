@@ -54,6 +54,12 @@ class AuthService {
                     sessionManager.setLoggedIn();
                     sessionManager.setCurrentScreen('main');
                 }
+                
+                // 토큰을 localStorage에 저장 (새로고침 시 복원용)
+                user.getIdToken().then(token => {
+                    localStorage.setItem('authToken', token);
+                    console.log('Auth token saved to localStorage');
+                });
             } else {
                 this.currentUser = null;
                 this.securityClearance = 1;
@@ -64,6 +70,10 @@ class AuthService {
                     sessionManager.setLoggedOut();
                     sessionManager.setCurrentScreen('login');
                 }
+                
+                // 토큰 제거
+                localStorage.removeItem('authToken');
+                console.log('Auth token removed from localStorage');
             }
         });
     }
@@ -364,6 +374,11 @@ class AuthService {
         try {
             await auth.signOut();
             showNotification('로그아웃되었습니다', 'success');
+            
+            // 토큰 제거
+            localStorage.removeItem('authToken');
+            sessionStorage.removeItem('authToken');
+            console.log('Auth tokens removed on logout');
             
             // 세션 초기화
             if (window.sessionManager) {
