@@ -876,6 +876,163 @@
     background: linear-gradient(145deg, #000000, #1a1a1a);
 }
 
+/* 폼 스타일 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: #FFBF00;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.terminal-input {
+    width: 100%;
+    background: #000033;
+    border: 1px solid #FFBF00;
+    color: #CCCCCC;
+    padding: 12px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+}
+
+.terminal-input:focus {
+    outline: none;
+    border-color: #FFD700;
+    box-shadow: 0 0 10px rgba(255, 191, 0, 0.3);
+}
+
+.terminal-textarea {
+    width: 100%;
+    background: #000033;
+    border: 1px solid #FFBF00;
+    color: #CCCCCC;
+    padding: 12px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.terminal-textarea:focus {
+    outline: none;
+    border-color: #FFD700;
+    box-shadow: 0 0 10px rgba(255, 191, 0, 0.3);
+}
+
+.terminal-select {
+    background: #000033;
+    border: 1px solid #FFBF00;
+    color: #CCCCCC;
+    padding: 8px 12px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+}
+
+.terminal-select:focus {
+    outline: none;
+    border-color: #FFD700;
+}
+
+/* 에디터 스타일 */
+.content-editor {
+    border: 1px solid #FFBF00;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.editor-tabs {
+    display: flex;
+    background: #000033;
+    border-bottom: 1px solid #FFBF00;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: #CCCCCC;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+    background: rgba(255, 191, 0, 0.1);
+    color: #FFBF00;
+}
+
+.tab-btn.active {
+    background: #FFBF00;
+    color: #000033;
+}
+
+.editor-content {
+    background: #000033;
+}
+
+.content-preview {
+    padding: 15px;
+    color: #CCCCCC;
+    line-height: 1.6;
+    min-height: 200px;
+}
+
+.content-preview h1, .content-preview h2, .content-preview h3 {
+    color: #FFBF00;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.content-preview strong {
+    color: #FFD700;
+}
+
+.content-preview em {
+    color: #FFBF00;
+}
+
+.content-preview code {
+    background: #191970;
+    color: #FFBF00;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+}
+
+/* 폼 액션 */
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.terminal-btn.primary {
+    background: #FFBF00;
+    color: #000033;
+    font-weight: bold;
+}
+
+.terminal-btn.primary:hover {
+    background: #FFD700;
+}
+
+.terminal-btn.secondary {
+    background: transparent;
+    border: 1px solid #666666;
+    color: #CCCCCC;
+}
+
+.terminal-btn.secondary:hover {
+    border-color: #FFBF00;
+    color: #FFBF00;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .forums-content {
@@ -936,5 +1093,17 @@
     .quick-actions .terminal-btn {
         font-size: 12px;
         padding: 10px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .editor-tabs {
+        flex-direction: column;
+    }
+    
+    .tab-btn {
+        text-align: left;
     }
 } 

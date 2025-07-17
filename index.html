@@ -646,6 +646,13 @@
                 } else {
                     console.error('Boot sequence not available');
                 }
+                
+                // 포럼 서비스 초기화
+                if (window.forumService) {
+                    console.log('Initializing forum service...');
+                    // 개발용 초기 데이터 생성 (필요시 주석 해제)
+                    // window.forumService.initializeForums();
+                }
             }, 500);
         });
     </script>

@@ -419,33 +419,33 @@ class Router {
 
     // 포럼 메인 페이지 표시
     showForumsMainView() {
-        this.showView('forums-main-view');
-        if (window.forumsMain) {
-            window.forumsMain.loadChannels();
+        const container = document.querySelector('.content-area');
+        if (container && window.forumsMain) {
+            window.forumsMain.init(container);
         }
     }
 
     // 채널 페이지 표시
     showChannelView(channelId) {
-        this.showView('channel-page-view');
-        if (window.channelPage) {
-            window.channelPage.loadChannel(channelId);
+        const container = document.querySelector('.content-area');
+        if (container && window.channelPage) {
+            window.channelPage.init(container, channelId);
         }
     }
 
     // 스레드 페이지 표시
     showThreadView(channelId, threadId) {
-        this.showView('thread-page-view');
-        if (window.threadPage) {
-            window.threadPage.loadThread(channelId, threadId);
+        const container = document.querySelector('.content-area');
+        if (container && window.threadPage) {
+            window.threadPage.init(container, channelId, threadId);
         }
     }
 
     // 스레드 생성 페이지 표시
     showCreateThreadView(channelId) {
-        this.showView('create-thread-view');
-        if (window.createThread) {
-            window.createThread.setChannel(channelId);
+        const container = document.querySelector('.content-area');
+        if (container && window.createThread) {
+            window.createThread.init(container, channelId);
         }
     }
 

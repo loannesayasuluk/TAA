@@ -1,306 +1,282 @@
 // TAA Archives - Create Thread Component
-// 스레드 생성 페이지
+// 스레드 생성 페이지: 새로운 토론 시작
 
 class CreateThread {
-    constructor(containerId = 'create-thread-view') {
-        this.containerId = containerId;
-        this.container = document.getElementById(containerId);
-        this.channelId = null;
+    constructor() {
         this.forumService = window.forumService;
-        this.draftKey = 'thread-draft';
-        
-        if (!this.container) {
-            console.error(`Container with id '${containerId}' not found`);
-            return;
-        }
-        
-        this.init();
+        this.container = null;
+        this.channelId = null;
+        this.currentChannel = null;
+        this.draftKey = null;
     }
 
-    init() {
-        this.setupEventListeners();
+    // 스레드 생성 페이지 초기화
+    async init(container, channelId) {
+        this.container = container;
+        this.channelId = channelId;
+        this.draftKey = `thread_draft_${channelId}`;
+        
+        this.render();
+        await this.loadChannelInfo();
         this.loadDraft();
+        this.setupEventListeners();
     }
 
+    // 스레드 생성 페이지 렌더링
+    render() {
+        if (!this.container) return;
+
+        this.container.innerHTML = `
+            <div class="channel-header">
+                <div class="channel-info">
+                    <h1 id="channel-title">새 토론 작성</h1>
+                    <p id="channel-description">채널 정보를 불러오는 중...</p>
+                </div>
+                <div class="channel-actions">
+                    <button class="terminal-btn" onclick="window.router.navigate('/forums/${this.channelId}')">채널로 돌아가기</button>
+                    <button class="terminal-btn" onclick="window.router.navigate('/forums')">포럼 목록</button>
+                </div>
+            </div>
+            
+            <div class="thread-content">
+                <form id="create-thread-form">
+                    <div class="form-group">
+                        <label for="thread-title">제목</label>
+                        <input type="text" id="thread-title" class="terminal-input" placeholder="토론 제목을 입력하세요" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="thread-content">내용</label>
+                        <div class="content-editor">
+                            <div class="editor-tabs">
+                                <button type="button" class="tab-btn active" data-tab="write">작성</button>
+                                <button type="button" class="tab-btn" data-tab="preview">미리보기</button>
+                            </div>
+                            <div class="editor-content">
+                                <textarea id="thread-content" class="terminal-textarea" placeholder="토론 내용을 입력하세요 (Markdown 지원)" rows="15" required></textarea>
+                                <div id="content-preview" class="content-preview" style="display: none;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="terminal-btn secondary" onclick="this.saveDraft()">임시저장</button>
+                        <button type="button" class="terminal-btn secondary" onclick="this.loadDraft()">임시저장 불러오기</button>
+                        <button type="submit" class="terminal-btn primary">토론 시작</button>
+                    </div>
+                </form>
+            </div>
+        `;
+    }
+
+    // 채널 정보 로드
+    async loadChannelInfo() {
+        try {
+            const forums = await this.forumService.getForums();
+            this.currentChannel = forums.find(f => f.id === this.channelId);
+            
+            if (this.currentChannel) {
+                const title = document.getElementById('channel-title');
+                const description = document.getElementById('channel-description');
+                
+                if (title) title.textContent = `${this.currentChannel.name} - 새 토론 작성`;
+                if (description) description.textContent = this.currentChannel.description;
+            } else {
+                this.showError('채널을 찾을 수 없습니다.');
+            }
+        } catch (error) {
+            console.error('Error loading channel info:', error);
+            this.showError('채널 정보를 불러오는데 실패했습니다.');
+        }
+    }
+
+    // 이벤트 리스너 설정
     setupEventListeners() {
-        // 폼 제출
-        const form = this.container.querySelector('#create-thread-form');
+        const form = document.getElementById('create-thread-form');
         if (form) {
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
-                this.submitThread();
+                this.createThread();
             });
         }
 
+        // 탭 전환
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this.switchTab(e.target.dataset.tab);
+            });
+        });
+
         // 자동 저장
-        const titleInput = this.container.querySelector('#thread-title');
-        const contentTextarea = this.container.querySelector('#thread-content');
+        const titleInput = document.getElementById('thread-title');
+        const contentTextarea = document.getElementById('thread-content');
         
         if (titleInput) {
             titleInput.addEventListener('input', () => {
-                this.saveDraft();
+                this.autoSave();
             });
         }
         
         if (contentTextarea) {
             contentTextarea.addEventListener('input', () => {
-                this.saveDraft();
-            });
-        }
-
-        // 미리보기 토글
-        const previewBtn = this.container.querySelector('#preview-btn');
-        if (previewBtn) {
-            previewBtn.addEventListener('click', () => {
-                this.togglePreview();
-            });
-        }
-
-        // 취소 버튼
-        const cancelBtn = this.container.querySelector('#cancel-btn');
-        if (cancelBtn) {
-            cancelBtn.addEventListener('click', () => {
-                this.navigateBack();
-            });
-        }
-
-        // 초안 삭제 버튼
-        const clearDraftBtn = this.container.querySelector('#clear-draft-btn');
-        if (clearDraftBtn) {
-            clearDraftBtn.addEventListener('click', () => {
-                this.clearDraft();
+                this.autoSave();
             });
         }
     }
 
-    // 채널 설정
-    setChannel(channelId) {
-        this.channelId = channelId;
-        this.updateChannelInfo(channelId);
-    }
+    // 탭 전환
+    switchTab(tabName) {
+        const writeTab = document.querySelector('[data-tab="write"]');
+        const previewTab = document.querySelector('[data-tab="preview"]');
+        const textarea = document.getElementById('thread-content');
+        const preview = document.getElementById('content-preview');
 
-    // 채널 정보 업데이트
-    async updateChannelInfo(channelId) {
-        try {
-            const channels = await this.forumService.getChannels();
-            const channel = channels.find(ch => ch.id === channelId);
-            
-            if (channel) {
-                const channelInfo = this.container.querySelector('.channel-info');
-                if (channelInfo) {
-                    channelInfo.innerHTML = `
-                        <h2>#${channel.name}</h2>
-                        <p>${channel.description || '설명이 없습니다.'}</p>
-                    `;
-                }
-            }
-        } catch (error) {
-            console.error('Error updating channel info:', error);
+        if (tabName === 'write') {
+            writeTab.classList.add('active');
+            previewTab.classList.remove('active');
+            textarea.style.display = 'block';
+            preview.style.display = 'none';
+        } else if (tabName === 'preview') {
+            previewTab.classList.add('active');
+            writeTab.classList.remove('active');
+            textarea.style.display = 'none';
+            preview.style.display = 'block';
+            this.updatePreview();
         }
     }
 
-    // 스레드 제출
-    async submitThread() {
-        const titleInput = this.container.querySelector('#thread-title');
-        const contentTextarea = this.container.querySelector('#thread-content');
+    // 미리보기 업데이트
+    updatePreview() {
+        const content = document.getElementById('thread-content').value;
+        const preview = document.getElementById('content-preview');
         
-        const title = titleInput.value.trim();
-        const content = contentTextarea.value.trim();
+        if (preview) {
+            // 간단한 Markdown 렌더링
+            const html = this.renderMarkdown(content);
+            preview.innerHTML = html;
+        }
+    }
 
-        // 유효성 검사
+    // Markdown 렌더링 (간단한 버전)
+    renderMarkdown(text) {
+        return text
+            .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+            .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+            .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+            .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+            .replace(/\*(.*)\*/gim, '<em>$1</em>')
+            .replace(/`(.*)`/gim, '<code>$1</code>')
+            .replace(/\n/gim, '<br>');
+    }
+
+    // 자동 저장
+    autoSave() {
+        const title = document.getElementById('thread-title')?.value || '';
+        const content = document.getElementById('thread-content')?.value || '';
+        
+        if (title || content) {
+            const draft = { title, content, timestamp: Date.now() };
+            localStorage.setItem(this.draftKey, JSON.stringify(draft));
+        }
+    }
+
+    // 임시저장
+    saveDraft() {
+        this.autoSave();
+        this.showSuccess('임시저장되었습니다.');
+    }
+
+    // 임시저장 불러오기
+    loadDraft() {
+        const draftData = localStorage.getItem(this.draftKey);
+        if (draftData) {
+            try {
+                const draft = JSON.parse(draftData);
+                const titleInput = document.getElementById('thread-title');
+                const contentTextarea = document.getElementById('thread-content');
+                
+                if (titleInput) titleInput.value = draft.title || '';
+                if (contentTextarea) contentTextarea.value = draft.content || '';
+                
+                this.showSuccess('임시저장된 내용을 불러왔습니다.');
+            } catch (error) {
+                console.error('Error loading draft:', error);
+                this.showError('임시저장 불러오기에 실패했습니다.');
+            }
+        } else {
+            this.showError('임시저장된 내용이 없습니다.');
+        }
+    }
+
+    // 스레드 생성
+    async createThread() {
+        const title = document.getElementById('thread-title')?.value?.trim();
+        const content = document.getElementById('thread-content')?.value?.trim();
+
         if (!title) {
-            showNotification('제목을 입력해주세요.', 'warning');
-            titleInput.focus();
+            this.showError('제목을 입력해주세요.');
             return;
         }
 
         if (!content) {
-            showNotification('내용을 입력해주세요.', 'warning');
-            contentTextarea.focus();
-            return;
-        }
-
-        if (title.length < 5) {
-            showNotification('제목은 5자 이상 입력해주세요.', 'warning');
-            titleInput.focus();
-            return;
-        }
-
-        if (content.length < 10) {
-            showNotification('내용은 10자 이상 입력해주세요.', 'warning');
-            contentTextarea.focus();
+            this.showError('내용을 입력해주세요.');
             return;
         }
 
         try {
-            this.showSubmitting();
-            
-            const threadData = {
-                channelId: this.channelId,
-                title: title,
-                content: content
-            };
+            // 로딩 상태 표시
+            const submitBtn = document.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = '생성 중...';
+            submitBtn.disabled = true;
 
-            const threadId = await this.forumService.createThread(threadData);
+            // 스레드 생성
+            const threadId = await this.forumService.createThread(this.channelId, title, content);
             
-            // 초안 삭제
-            this.clearDraft();
+            // 임시저장 삭제
+            localStorage.removeItem(this.draftKey);
             
-            showNotification('스레드가 성공적으로 생성되었습니다.', 'success');
+            this.showSuccess('토론이 성공적으로 생성되었습니다.');
             
-            // 스레드 페이지로 이동
-            this.navigateToThread(threadId);
-            
+            // 생성된 스레드 페이지로 이동
+            setTimeout(() => {
+                window.router.navigate(`/forums/${this.channelId}/thread/${threadId}`);
+            }, 1000);
+
         } catch (error) {
             console.error('Error creating thread:', error);
-            showNotification('스레드 생성에 실패했습니다.', 'error');
-            this.hideSubmitting();
-        }
-    }
-
-    // 미리보기 토글
-    togglePreview() {
-        const contentTextarea = this.container.querySelector('#thread-content');
-        const previewArea = this.container.querySelector('#preview-area');
-        const previewBtn = this.container.querySelector('#preview-btn');
-        
-        if (!contentTextarea || !previewArea) return;
-
-        if (previewArea.style.display === 'none' || !previewArea.style.display) {
-            // 미리보기 표시
-            const content = contentTextarea.value;
-            previewArea.innerHTML = this.formatContent(content);
-            previewArea.style.display = 'block';
-            contentTextarea.style.display = 'none';
-            previewBtn.textContent = '편집 모드';
-        } else {
-            // 편집 모드로 전환
-            previewArea.style.display = 'none';
-            contentTextarea.style.display = 'block';
-            previewBtn.textContent = '미리보기';
-        }
-    }
-
-    // 내용 포맷팅 (마크다운 지원)
-    formatContent(content) {
-        if (!content) return '';
-        
-        return content
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .replace(/`(.*?)`/g, '<code>$1</code>')
-            .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-            .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-            .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-            .replace(/\n/g, '<br>');
-    }
-
-    // 초안 저장
-    saveDraft() {
-        const titleInput = this.container.querySelector('#thread-title');
-        const contentTextarea = this.container.querySelector('#thread-content');
-        
-        if (!titleInput || !contentTextarea) return;
-
-        const draft = {
-            title: titleInput.value,
-            content: contentTextarea.value,
-            channelId: this.channelId,
-            timestamp: new Date().toISOString()
-        };
-
-        localStorage.setItem(this.draftKey, JSON.stringify(draft));
-    }
-
-    // 초안 로드
-    loadDraft() {
-        const draftData = localStorage.getItem(this.draftKey);
-        if (!draftData) return;
-
-        try {
-            const draft = JSON.parse(draftData);
-            const titleInput = this.container.querySelector('#thread-title');
-            const contentTextarea = this.container.querySelector('#thread-content');
+            this.showError('토론 생성에 실패했습니다.');
             
-            if (titleInput && contentTextarea) {
-                titleInput.value = draft.title || '';
-                contentTextarea.value = draft.content || '';
-                
-                // 초안이 있으면 알림 표시
-                if (draft.title || draft.content) {
-                    this.showDraftNotification();
-                }
-            }
-        } catch (error) {
-            console.error('Error loading draft:', error);
-        }
-    }
-
-    // 초안 삭제
-    clearDraft() {
-        localStorage.removeItem(this.draftKey);
-        
-        const titleInput = this.container.querySelector('#thread-title');
-        const contentTextarea = this.container.querySelector('#thread-content');
-        
-        if (titleInput) titleInput.value = '';
-        if (contentTextarea) contentTextarea.value = '';
-        
-        showNotification('초안이 삭제되었습니다.', 'success');
-    }
-
-    // 초안 알림 표시
-    showDraftNotification() {
-        const draftNotification = this.container.querySelector('#draft-notification');
-        if (draftNotification) {
-            draftNotification.style.display = 'block';
-        }
-    }
-
-    // 제출 중 표시
-    showSubmitting() {
-        const submitBtn = this.container.querySelector('#submit-btn');
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.textContent = '생성 중...';
-        }
-    }
-
-    // 제출 중 숨기기
-    hideSubmitting() {
-        const submitBtn = this.container.querySelector('#submit-btn');
-        if (submitBtn) {
+            // 버튼 상태 복원
+            const submitBtn = document.querySelector('button[type="submit"]');
+            submitBtn.textContent = originalText;
             submitBtn.disabled = false;
-            submitBtn.textContent = '스레드 생성';
         }
     }
 
-    // 스레드 페이지로 이동
-    navigateToThread(threadId) {
-        if (window.router) {
-            window.router.navigate(`/forums/${this.channelId}/thread/${threadId}`);
-        } else {
-            window.location.href = `/forums/${this.channelId}/thread/${threadId}`;
+    // 성공 메시지 표시
+    showSuccess(message) {
+        if (window.terminalEffects) {
+            window.terminalEffects.showSuccess(message);
         }
     }
 
-    // 뒤로가기
-    navigateBack() {
-        if (window.router) {
-            window.router.navigate(`/forums/${this.channelId}`);
-        } else {
-            window.history.back();
+    // 에러 메시지 표시
+    showError(message) {
+        if (window.terminalEffects) {
+            window.terminalEffects.showError(message);
         }
     }
 
-    // 정리
+    // 컴포넌트 정리
     cleanup() {
-        // 페이지를 벗어날 때 자동 저장
-        this.saveDraft();
+        // 임시저장 정리 (선택사항)
+        // localStorage.removeItem(this.draftKey);
     }
 }
 
 // 전역 인스턴스 생성
 window.createThread = new CreateThread();
 
-console.log('TAA Archives: CreateThread component initialized'); 
+console.log('TAA Archives: Create thread component initialized'); 

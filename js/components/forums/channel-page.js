@@ -1,46 +1,155 @@
 // TAA Archives - Channel Page Component
-// 채널 페이지: 스레드 목록 표시
+// 채널 페이지: 특정 채널의 모든 게시물 목록 표시
 
 class ChannelPage {
-    constructor(containerId = 'channel-page-view') {
-        this.containerId = containerId;
-        this.container = document.getElementById(containerId);
-        this.channelId = null;
-        this.threads = [];
-        this.unsubscribe = null;
+    constructor() {
         this.forumService = window.forumService;
-        
-        if (!this.container) {
-            console.error(`Container with id '${containerId}' not found`);
+        this.container = null;
+        this.channelId = null;
+        this.unsubscribe = null;
+        this.currentChannel = null;
+    }
+
+    // 채널 페이지 초기화
+    async init(container, channelId) {
+        this.container = container;
+        this.channelId = channelId;
+        this.render();
+        await this.loadChannelInfo();
+        this.loadThreads();
+    }
+
+    // 채널 페이지 렌더링
+    render() {
+        if (!this.container) return;
+
+        this.container.innerHTML = `
+            <div class="channel-header">
+                <div class="channel-info">
+                    <h1 id="channel-title">채널 로딩 중...</h1>
+                    <p id="channel-description">설명을 불러오는 중...</p>
+                </div>
+                <div class="channel-actions">
+                    <button class="terminal-btn" onclick="window.router.navigate('/forums')">포럼 목록</button>
+                    <button class="terminal-btn" onclick="window.router.navigate('/forums/${this.channelId}/create')">새 토론 시작</button>
+                </div>
+            </div>
+            
+            <div class="threads-container">
+                <div class="threads-header">
+                    <h2>토론 목록</h2>
+                    <div class="thread-filters">
+                        <select class="terminal-select" id="sort-select">
+                            <option value="latest">최신순</option>
+                            <option value="votes">추천순</option>
+                            <option value="comments">댓글순</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="threads-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="title-col">제목</th>
+                                <th class="agent-col">작성자</th>
+                                <th class="timestamp-col">작성일</th>
+                                <th class="votes-col">추천</th>
+                                <th class="replies-col">댓글</th>
+                            </tr>
+                        </thead>
+                        <tbody id="threads-tbody">
+                            <tr>
+                                <td colspan="5" class="loading-container">
+                                    <div class="loading-spinner"></div>
+                                    <p>토론 목록을 불러오는 중...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+
+        // 정렬 기능 설정
+        this.setupSorting();
+    }
+
+    // 채널 정보 로드
+    async loadChannelInfo() {
+        try {
+            const forums = await this.forumService.getForums();
+            this.currentChannel = forums.find(f => f.id === this.channelId);
+            
+            if (this.currentChannel) {
+                const title = document.getElementById('channel-title');
+                const description = document.getElementById('channel-description');
+                
+                if (title) title.textContent = this.currentChannel.name;
+                if (description) description.textContent = this.currentChannel.description;
+            } else {
+                this.showError('채널을 찾을 수 없습니다.');
+            }
+        } catch (error) {
+            console.error('Error loading channel info:', error);
+            this.showError('채널 정보를 불러오는데 실패했습니다.');
+        }
+    }
+
+    // 스레드 목록 로드 (실시간)
+    loadThreads() {
+        if (!this.channelId) return;
+
+        this.unsubscribe = this.forumService.getThreadsByChannel(this.channelId, (threads) => {
+            this.displayThreads(threads);
+        });
+    }
+
+    // 스레드 목록 표시
+    displayThreads(threads) {
+        const tbody = document.getElementById('threads-tbody');
+        if (!tbody) return;
+
+        if (threads.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <h3>토론이 없습니다</h3>
+                        <p>첫 번째 토론을 시작해보세요.</p>
+                        <button class="terminal-btn" onclick="window.router.navigate('/forums/${this.channelId}/create')">새 토론 시작</button>
+                    </td>
+                </tr>
+            `;
             return;
         }
-        
-        this.init();
+
+        tbody.innerHTML = threads.map(thread => `
+            <tr class="thread-row" onclick="window.router.navigate('/forums/${this.channelId}/thread/${thread.id}')">
+                <td class="title-col">
+                    <a href="#" class="thread-title" onclick="event.preventDefault(); window.router.navigate('/forums/${this.channelId}/thread/${thread.id}')">
+                        ${thread.title}
+                    </a>
+                </td>
+                <td class="agent-col">
+                    <span class="agent-name">${thread.authorName || '익명'}</span>
+                </td>
+                <td class="timestamp-col">
+                    <span class="timestamp">${this.formatDate(thread.createdAt)}</span>
+                </td>
+                <td class="votes-col">
+                    <span class="vote-count">${thread.votes || 0}</span>
+                </td>
+                <td class="replies-col">
+                    <span class="reply-count">${thread.commentCount || 0}</span>
+                </td>
+            </tr>
+        `).join('');
     }
 
-    init() {
-        this.setupEventListeners();
-    }
-
-    setupEventListeners() {
-        // 새 스레드 생성 버튼
-        const createThreadBtn = this.container.querySelector('#create-thread-btn');
-        if (createThreadBtn) {
-            createThreadBtn.addEventListener('click', () => {
-                this.navigateToCreateThread();
-            });
-        }
-
-        // 검색 기능
-        const searchInput = this.container.querySelector('#threads-search');
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                this.filterThreads(e.target.value);
-            });
-        }
-
-        // 정렬 옵션
-        const sortSelect = this.container.querySelector('#threads-sort');
+    // 정렬 기능 설정
+    setupSorting() {
+        const sortSelect = document.getElementById('sort-select');
         if (sortSelect) {
             sortSelect.addEventListener('change', (e) => {
                 this.sortThreads(e.target.value);
@@ -48,215 +157,20 @@ class ChannelPage {
         }
     }
 
-    // 채널 로드
-    async loadChannel(channelId) {
-        this.channelId = channelId;
-        
-        try {
-            this.showLoading();
-            
-            // 기존 구독 해제
-            if (this.unsubscribe) {
-                this.unsubscribe();
-            }
-
-            // 실시간 리스너 설정
-            this.unsubscribe = this.forumService.subscribeToThreads(channelId, (threads) => {
-                this.threads = threads;
-                this.render();
-                this.hideLoading();
-            });
-
-            // 채널 정보 업데이트
-            this.updateChannelInfo(channelId);
-
-        } catch (error) {
-            console.error('Error loading channel:', error);
-            this.showError('채널을 불러오는데 실패했습니다.');
-            this.hideLoading();
-        }
-    }
-
-    // 채널 정보 업데이트
-    async updateChannelInfo(channelId) {
-        try {
-            const channels = await this.forumService.getChannels();
-            const channel = channels.find(ch => ch.id === channelId);
-            
-            if (channel) {
-                const channelTitle = this.container.querySelector('.channel-title');
-                const channelDescription = this.container.querySelector('.channel-description');
-                
-                if (channelTitle) {
-                    channelTitle.textContent = `#${channel.name}`;
-                }
-                
-                if (channelDescription) {
-                    channelDescription.textContent = channel.description || '설명이 없습니다.';
-                }
-            }
-        } catch (error) {
-            console.error('Error updating channel info:', error);
-        }
-    }
-
-    // 스레드 목록 렌더링
-    render() {
-        if (!this.container) return;
-
-        const threadsTable = this.container.querySelector('#threads-table tbody');
-        if (!threadsTable) return;
-
-        if (this.threads.length === 0) {
-            threadsTable.innerHTML = `
-                <tr>
-                    <td colspan="6" class="empty-state">
-                        <div class="empty-icon">📝</div>
-                        <h3>스레드가 없습니다</h3>
-                        <p>첫 번째 스레드를 작성해보세요.</p>
-                        <button class="terminal-btn" onclick="this.navigateToCreateThread()">스레드 작성</button>
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-
-        threadsTable.innerHTML = this.threads.map(thread => 
-            this.createThreadRow(thread)
-        ).join('');
-
-        // 스레드 행 클릭 이벤트 설정
-        this.setupThreadClickEvents();
-    }
-
-    // 스레드 행 생성
-    createThreadRow(thread) {
-        const createdAt = this.formatDate(thread.createdAt);
-        const isValidated = thread.votes >= 10;
-        
-        return `
-            <tr class="thread-row ${isValidated ? 'validated' : ''}" data-thread-id="${thread.id}">
-                <td class="status-col">
-                    ${isValidated ? '<span class="validated-badge">✓</span>' : ''}
-                </td>
-                <td class="title-col">
-                    <a href="#" class="thread-title ${isValidated ? 'validated-intel' : ''}">
-                        ${thread.title}
-                    </a>
-                </td>
-                <td class="agent-col">
-                    <span class="agent-name">${thread.authorName}</span>
-                </td>
-                <td class="timestamp-col">
-                    <span class="timestamp">${createdAt}</span>
-                </td>
-                <td class="votes-col">
-                    <button class="vote-btn" data-thread-id="${thread.id}" data-vote-type="up">
-                        <span class="vote-icon">▲</span>
-                        <span class="vote-count">${thread.votes || 0}</span>
-                    </button>
-                </td>
-                <td class="replies-col">
-                    <span class="reply-count">${thread.commentCount || 0}</span>
-                </td>
-            </tr>
-        `;
-    }
-
-    // 스레드 클릭 이벤트 설정
-    setupThreadClickEvents() {
-        const threadRows = this.container.querySelectorAll('.thread-row');
-        threadRows.forEach(row => {
-            row.addEventListener('click', (e) => {
-                // 버튼 클릭이 아닌 행 클릭만 처리
-                if (e.target.tagName === 'BUTTON') return;
-                
-                const threadId = row.dataset.threadId;
-                this.navigateToThread(threadId);
-            });
-        });
-
-        // 추천 버튼 이벤트
-        const voteBtns = this.container.querySelectorAll('.vote-btn');
-        voteBtns.forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                e.stopPropagation();
-                
-                const threadId = btn.dataset.threadId;
-                const voteType = btn.dataset.voteType;
-                
-                try {
-                    await this.forumService.voteThread(threadId, voteType);
-                    showNotification('추천이 반영되었습니다.', 'success');
-                } catch (error) {
-                    console.error('Error voting thread:', error);
-                    showNotification('추천 처리에 실패했습니다.', 'error');
-                }
-            });
-        });
-    }
-
-    // 스레드 페이지로 이동
-    navigateToThread(threadId) {
-        if (window.router) {
-            window.router.navigate(`/forums/${this.channelId}/thread/${threadId}`);
-        } else {
-            window.location.href = `/forums/${this.channelId}/thread/${threadId}`;
-        }
-    }
-
-    // 스레드 생성 페이지로 이동
-    navigateToCreateThread() {
-        if (window.router) {
-            window.router.navigate(`/forums/${this.channelId}/create`);
-        } else {
-            window.location.href = `/forums/${this.channelId}/create`;
-        }
-    }
-
-    // 스레드 필터링
-    filterThreads(query) {
-        const threadRows = this.container.querySelectorAll('.thread-row');
-        const searchTerm = query.toLowerCase();
-
-        threadRows.forEach(row => {
-            const title = row.querySelector('.thread-title').textContent.toLowerCase();
-            const author = row.querySelector('.agent-name').textContent.toLowerCase();
-            
-            if (title.includes(searchTerm) || author.includes(searchTerm)) {
-                row.style.display = 'table-row';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    }
-
     // 스레드 정렬
     sortThreads(sortType) {
-        const sortedThreads = [...this.threads];
-        
-        switch (sortType) {
-            case 'newest':
-                sortedThreads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                break;
-            case 'oldest':
-                sortedThreads.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-                break;
-            case 'votes':
-                sortedThreads.sort((a, b) => (b.votes || 0) - (a.votes || 0));
-                break;
-            case 'comments':
-                sortedThreads.sort((a, b) => (b.commentCount || 0) - (a.commentCount || 0));
-                break;
+        // 현재 스레드 목록을 다시 로드하여 정렬 적용
+        if (this.unsubscribe) {
+            this.unsubscribe();
         }
         
-        this.threads = sortedThreads;
-        this.render();
+        // 정렬 로직은 서버 사이드에서 처리되므로 다시 구독
+        this.loadThreads();
     }
 
     // 날짜 포맷팅
     formatDate(timestamp) {
-        if (!timestamp) return '알 수 없음';
+        if (!timestamp) return '-';
         
         const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
         const now = new Date();
@@ -274,44 +188,21 @@ class ChannelPage {
         return date.toLocaleDateString('ko-KR');
     }
 
-    // 로딩 표시
-    showLoading() {
-        const threadsTable = this.container.querySelector('#threads-table tbody');
-        if (threadsTable) {
-            threadsTable.innerHTML = `
-                <tr>
-                    <td colspan="6" class="loading-container">
-                        <div class="loading-spinner"></div>
-                        <p>스레드 목록을 불러오는 중...</p>
-                    </td>
-                </tr>
-            `;
+    // 성공 메시지 표시
+    showSuccess(message) {
+        if (window.terminalEffects) {
+            window.terminalEffects.showSuccess(message);
         }
     }
 
-    // 로딩 숨기기
-    hideLoading() {
-        // render() 메서드에서 처리됨
-    }
-
-    // 에러 표시
+    // 에러 메시지 표시
     showError(message) {
-        const threadsTable = this.container.querySelector('#threads-table tbody');
-        if (threadsTable) {
-            threadsTable.innerHTML = `
-                <tr>
-                    <td colspan="6" class="error-state">
-                        <div class="error-icon">⚠️</div>
-                        <h3>오류 발생</h3>
-                        <p>${message}</p>
-                        <button class="terminal-btn" onclick="this.loadChannel('${this.channelId}')">다시 시도</button>
-                    </td>
-                </tr>
-            `;
+        if (window.terminalEffects) {
+            window.terminalEffects.showError(message);
         }
     }
 
-    // 정리
+    // 컴포넌트 정리
     cleanup() {
         if (this.unsubscribe) {
             this.unsubscribe();
@@ -322,4 +213,4 @@ class ChannelPage {
 // 전역 인스턴스 생성
 window.channelPage = new ChannelPage();
 
-console.log('TAA Archives: ChannelPage component initialized'); 
+console.log('TAA Archives: Channel page component initialized'); 
