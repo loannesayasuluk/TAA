@@ -143,20 +143,49 @@
             <div class="content-area">
                 <!-- 홈 화면 -->
                 <div id="home-view" class="view active">
-                    <div class="welcome-message">
-                        <h1>TAA 아카이브에 오신 것을 환영합니다</h1>
-                        <p>기밀 정보 터미널 접근 시스템</p>
-                        <div class="quick-actions">
-                            <button class="action-btn" onclick="router.navigate('/create')">새 파일 생성</button>
-                            <button class="action-btn" onclick="router.navigate('/recent')">최근 파일 보기</button>
-                        </div>
-                        <!-- 관리자용 마이그레이션 버튼 -->
-                        <div id="admin-actions" class="admin-actions" style="display: none;">
-                            <h3>관리자 기능</h3>
-                            <button id="migrate-accounts-btn" class="terminal-btn warning">계정 마이그레이션</button>
+                    <div class="dashboard-header">
+                        <h1>에이전트 종합 상황판</h1>
+                        <p>기밀 정보 터미널 접근 시스템 - 실시간 모니터링</p>
+                    </div>
+                    
+                    <div class="dashboard-grid">
+                        <!-- 모듈 1: 주요 정보 브리핑 -->
+                        <div class="dashboard-module" id="key-intel-module">
+                            <h3>주요 정보 브리핑</h3>
+                            <div class="module-content" id="key-intel-content">
+                                <div class="loading-indicator">데이터 로딩 중...</div>
+                            </div>
                         </div>
                         
-
+                        <!-- 모듈 2: 최신 수신 보고 -->
+                        <div class="dashboard-module" id="latest-reports-module">
+                            <h3>최신 수신 보고</h3>
+                            <div class="module-content" id="latest-reports-content">
+                                <div class="loading-indicator">데이터 로딩 중...</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 모듈 3: 오늘의 주요 파일 -->
+                        <div class="dashboard-module" id="featured-file-module">
+                            <h3>오늘의 주요 파일</h3>
+                            <div class="module-content" id="featured-file-content">
+                                <div class="loading-indicator">데이터 로딩 중...</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 모듈 4: 아카이브 현황 -->
+                        <div class="dashboard-module" id="archives-status-module">
+                            <h3>아카이브 현황</h3>
+                            <div class="module-content" id="archives-status-content">
+                                <div class="loading-indicator">데이터 로딩 중...</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 관리자용 마이그레이션 버튼 -->
+                    <div id="admin-actions" class="admin-actions" style="display: none;">
+                        <h3>관리자 기능</h3>
+                        <button id="migrate-accounts-btn" class="terminal-btn warning">계정 마이그레이션</button>
                     </div>
                 </div>
 
@@ -463,6 +492,8 @@
     <script src="js/services/file-service.js"></script>
     <script src="js/services/comment-service.js"></script>
     <script src="js/services/cloud-functions-service.js"></script>
+    <script src="js/services/forum-service.js"></script>
+    <script src="js/services/dashboard-service.js"></script>
     <script src="js/components/boot-sequence.js"></script>
     <script src="js/components/ghost-terminals.js"></script>
     <script src="js/components/file-editor.js"></script>
@@ -475,6 +506,7 @@
     <script src="js/components/forums/thread-page.js"></script>
     <script src="js/components/search-results.js"></script>
     <script src="js/components/wiki-enhanced.js"></script>
+    <script src="js/components/dashboard/dashboard-modules.js"></script>
     <script src="js/app.js"></script>
     
     <!-- 부팅 시퀀스 즉시 시작 -->

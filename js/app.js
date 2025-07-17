@@ -295,12 +295,13 @@ class TAAApp {
 
     // 홈 뷰 초기화
     async initializeHomeView() {
-        // 최근 파일 목록 로드
+        // 대시보드 모듈들 초기화
         try {
-            const recentFiles = await fileService.getFiles({ limit: 5 });
-            this.displayRecentFiles(recentFiles);
+            if (window.dashboardModules) {
+                await window.dashboardModules.renderAllModules();
+            }
         } catch (error) {
-            console.error('Error loading recent files:', error);
+            console.error('Error initializing dashboard modules:', error);
         }
         
         // 관리자 기능 숨기기 (일반 모드에서는 보이지 않음)

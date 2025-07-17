@@ -1133,9 +1133,36 @@ TAA 아카이브는 기밀 정보 관리 및 협업을 위한 통합 플랫폼�
 
         console.log('All sample documents created successfully');
     }
+
+    // site_config 초기화 (대시보드 설정용)
+    async initializeSiteConfig() {
+        try {
+            const configRef = db.collection('site_config').doc('dashboard');
+            const configDoc = await configRef.get();
+
+            if (!configDoc.exists) {
+                // 기본 설정 생성
+                await configRef.set({
+                    featuredFileId: null,
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+                    dashboardSettings: {
+                        refreshInterval: 30000, // 30초
+                        maxItems: 5,
+                        showRealTimeUpdates: true
+                    }
+                });
+                console.log('Site config initialized');
+            }
+        } catch (error) {
+            console.error('Error initializing site config:', error);
+        }
+    }
 }
 
 // 전역 인스턴스 생성
 window.fileService = new FileService();
+
+// site_config 초기화
+window.fileService.initializeSiteConfig();
 
 console.log('TAA Archives: File service initialized'); 
