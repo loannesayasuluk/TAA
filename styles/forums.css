@@ -1,0 +1,894 @@
+/* TAA Archives - Forums Styles */
+
+/* 포럼 메인 페이지 */
+.forums-header {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.forums-header h1 {
+    color: #FFBF00;
+    margin: 0 0 10px 0;
+    font-size: 24px;
+}
+
+.forums-header p {
+    color: #CCCCCC;
+    margin: 0 0 15px 0;
+    font-size: 14px;
+}
+
+.forums-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.forums-actions .terminal-btn {
+    font-size: 12px;
+    padding: 8px 12px;
+}
+
+.forums-content {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+}
+
+/* 채널 그리드 */
+.channels-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.channels-header h2 {
+    color: #FFBF00;
+    margin: 0;
+    font-size: 18px;
+}
+
+.channels-search {
+    flex: 0 0 300px;
+}
+
+.channels-search .search-input {
+    width: 100%;
+    background: #000033;
+    border: 1px solid #FFBF00;
+    color: #CCCCCC;
+    padding: 8px 12px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+}
+
+.channels-search .search-input:focus {
+    outline: none;
+    border-color: #FFD700;
+    box-shadow: 0 0 10px rgba(255, 191, 0, 0.3);
+}
+
+.channels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.channel-card {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-radius: 5px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.channel-card:hover {
+    border-color: #FFD700;
+    box-shadow: 0 0 15px rgba(255, 191, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.channel-card.restricted {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.channel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.channel-name {
+    color: #FFBF00;
+    margin: 0;
+    font-size: 16px;
+}
+
+.clearance-badge {
+    background: #FF6B6B;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.channel-description {
+    color: #CCCCCC;
+    margin: 0 0 15px 0;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.channel-stats {
+    display: flex;
+    gap: 15px;
+}
+
+.stat {
+    color: #999999;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.stat-icon {
+    font-size: 14px;
+}
+
+.access-denied {
+    color: #FF6B6B;
+    font-size: 12px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* 포럼 사이드바 */
+.forums-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sidebar-section h3 {
+    color: #FFBF00;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.stats-list {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-radius: 5px;
+    padding: 15px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    color: #CCCCCC;
+    font-size: 14px;
+}
+
+.stat-item:last-child {
+    margin-bottom: 0;
+}
+
+.stat-label {
+    color: #999999;
+}
+
+.stat-value {
+    color: #FFBF00;
+    font-weight: bold;
+}
+
+.recent-activity {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-radius: 5px;
+    padding: 15px;
+}
+
+.activity-item {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #333333;
+    font-size: 12px;
+}
+
+.activity-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.activity-agent {
+    color: #FFBF00;
+    font-weight: bold;
+}
+
+.activity-action {
+    color: #CCCCCC;
+    margin: 0 5px;
+}
+
+.activity-time {
+    color: #999999;
+}
+
+/* 퀵 액션 버튼 */
+.quick-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.quick-actions .terminal-btn {
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+    font-size: 14px;
+}
+
+/* 실시간 업데이트 애니메이션 */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.stat-value.new-posts {
+    animation: pulse 2s infinite;
+    color: #FFD700;
+}
+
+/* 더 보기 버튼 */
+.load-more-btn {
+    width: 100%;
+    margin-top: 20px;
+    padding: 15px;
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    color: #FFBF00;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.load-more-btn:hover {
+    background: rgba(255, 191, 0, 0.1);
+    border-color: #FFD700;
+    transform: translateY(-1px);
+}
+
+.load-more-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* 채널 페이지 */
+.channel-header {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.channel-info h1 {
+    color: #FFBF00;
+    margin: 0 0 5px 0;
+    font-size: 24px;
+}
+
+.channel-info p {
+    color: #CCCCCC;
+    margin: 0;
+    font-size: 14px;
+}
+
+.channel-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* 스레드 테이블 */
+.threads-container {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.threads-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.threads-header h2 {
+    color: #FFBF00;
+    margin: 0;
+    font-size: 18px;
+}
+
+.thread-filters {
+    display: flex;
+    gap: 10px;
+}
+
+.threads-table {
+    overflow-x: auto;
+}
+
+.threads-table table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #CCCCCC;
+}
+
+.threads-table th {
+    background: #000033;
+    color: #FFBF00;
+    padding: 12px 8px;
+    text-align: left;
+    border-bottom: 2px solid #FFBF00;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.threads-table td {
+    padding: 12px 8px;
+    border-bottom: 1px solid #333333;
+    font-size: 14px;
+}
+
+.thread-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.thread-row:hover {
+    background: rgba(255, 191, 0, 0.1);
+}
+
+.thread-row.validated {
+    background: rgba(255, 191, 0, 0.05);
+}
+
+.thread-title {
+    color: #FFBF00;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.thread-title:hover {
+    color: #FFD700;
+}
+
+.status-col {
+    width: 80px;
+    text-align: center;
+}
+
+.status-icon {
+    font-size: 16px;
+}
+
+.validated-badge {
+    color: #FFD700;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.title-col {
+    width: 40%;
+}
+
+.agent-col {
+    width: 15%;
+}
+
+.timestamp-col {
+    width: 15%;
+}
+
+.votes-col, .replies-col {
+    width: 10%;
+    text-align: center;
+}
+
+.agent-name {
+    color: #FFBF00;
+    font-weight: bold;
+}
+
+.timestamp {
+    color: #999999;
+    font-size: 12px;
+}
+
+.vote-count, .reply-count {
+    color: #FFBF00;
+    font-weight: bold;
+}
+
+/* 페이지네이션 */
+.threads-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #333333;
+}
+
+.page-info {
+    color: #CCCCCC;
+    font-size: 14px;
+}
+
+/* 스레드 페이지 */
+.thread-header {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.breadcrumb {
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.breadcrumb a {
+    color: #FFBF00;
+    text-decoration: none;
+    margin: 0 5px;
+}
+
+.breadcrumb a:hover {
+    color: #FFD700;
+}
+
+.thread-title-section h1 {
+    color: #FFBF00;
+    margin: 0 0 10px 0;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.thread-title.validated {
+    color: #FFD700;
+}
+
+.validated-badge {
+    color: #FFD700;
+    font-size: 18px;
+}
+
+.thread-meta {
+    display: flex;
+    gap: 20px;
+    color: #CCCCCC;
+    font-size: 14px;
+}
+
+.thread-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.vote-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.vote-btn {
+    background: transparent;
+    border: 1px solid #FFBF00;
+    color: #FFBF00;
+    padding: 8px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.vote-btn:hover {
+    background: rgba(255, 191, 0, 0.1);
+}
+
+.vote-btn.voted {
+    background: #FFBF00;
+    color: #000033;
+}
+
+.vote-icon {
+    font-size: 16px;
+}
+
+.vote-count {
+    font-weight: bold;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* 스레드 내용 */
+.thread-content {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.content-body {
+    color: #CCCCCC;
+    line-height: 1.6;
+}
+
+.content-body h1, .content-body h2, .content-body h3 {
+    color: #FFBF00;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.content-body h1 {
+    font-size: 24px;
+}
+
+.content-body h2 {
+    font-size: 20px;
+}
+
+.content-body h3 {
+    font-size: 18px;
+}
+
+.content-body p {
+    margin-bottom: 15px;
+}
+
+.content-body strong {
+    color: #FFD700;
+}
+
+.content-body em {
+    color: #FFBF00;
+}
+
+.content-body code {
+    background: #000033;
+    color: #FFBF00;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+}
+
+.content-body pre {
+    background: #000033;
+    border: 1px solid #FFBF00;
+    border-radius: 5px;
+    padding: 15px;
+    overflow-x: auto;
+    margin: 15px 0;
+}
+
+.content-body pre code {
+    background: none;
+    padding: 0;
+}
+
+/* 댓글 섹션 */
+.comments-section {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.comments-section h2 {
+    color: #FFBF00;
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+.comment-form {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #333333;
+}
+
+.comment-form textarea {
+    width: 100%;
+    background: #000033;
+    border: 1px solid #FFBF00;
+    color: #CCCCCC;
+    padding: 15px;
+    border-radius: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    resize: vertical;
+    margin-bottom: 10px;
+}
+
+.comment-form textarea:focus {
+    outline: none;
+    border-color: #FFD700;
+    box-shadow: 0 0 10px rgba(255, 191, 0, 0.3);
+}
+
+/* 댓글 목록 */
+.comment-item {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #333333;
+}
+
+.comment-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.comment-author {
+    color: #FFBF00;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.comment-timestamp {
+    color: #999999;
+    font-size: 12px;
+}
+
+.comment-votes {
+    color: #FFBF00;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.comment-content {
+    color: #CCCCCC;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.comment-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.comment-vote-btn {
+    background: transparent;
+    border: 1px solid #666666;
+    color: #CCCCCC;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 12px;
+}
+
+.comment-vote-btn:hover {
+    border-color: #FFBF00;
+    color: #FFBF00;
+}
+
+.comment-reply-btn {
+    background: transparent;
+    border: 1px solid #666666;
+    color: #CCCCCC;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 12px;
+}
+
+.comment-reply-btn:hover {
+    border-color: #FFBF00;
+    color: #FFBF00;
+}
+
+/* 로딩 및 에러 상태 */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: #CCCCCC;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #333333;
+    border-top: 3px solid #FFBF00;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-state {
+    text-align: center;
+    padding: 40px;
+    color: #CCCCCC;
+}
+
+.error-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.error-state h3 {
+    color: #FF6B6B;
+    margin-bottom: 10px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #CCCCCC;
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.empty-state h3 {
+    color: #FFBF00;
+    margin-bottom: 10px;
+}
+
+/* 접근성 */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* 포커스 표시 */
+.channel-card:focus {
+    outline: 2px solid #FFD700;
+    outline-offset: 2px;
+}
+
+/* 다크 모드 */
+.dark-mode .forums-header {
+    background: linear-gradient(145deg, #000000, #1a1a1a);
+}
+
+.dark-mode .channel-card {
+    background: linear-gradient(145deg, #000000, #1a1a1a);
+}
+
+.dark-mode .stats-list,
+.dark-mode .recent-activity {
+    background: linear-gradient(145deg, #000000, #1a1a1a);
+}
+
+.dark-mode .threads-container {
+    background: linear-gradient(145deg, #000000, #1a1a1a);
+}
+
+.dark-mode .thread-content {
+    background: linear-gradient(145deg, #000000, #1a1a1a);
+}
+
+.dark-mode .comments-section {
+    background: linear-gradient(145deg, #000000, #1a1a1a);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .forums-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .channels-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .channels-search {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+    
+    .forums-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .forums-actions .terminal-btn {
+        width: 100%;
+    }
+    
+    .channel-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .threads-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .thread-filters {
+        width: 100%;
+    }
+    
+    .thread-meta {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .thread-actions {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .channels-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .quick-actions .terminal-btn {
+        font-size: 12px;
+        padding: 10px;
+    }
+} 

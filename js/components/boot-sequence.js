@@ -9,47 +9,47 @@ class BootSequence {
         this.bootSteps = [
             {
                 text: "INITIALIZING TAA ARCHIVES...",
-                delay: 1000,
-                sound: true
-            },
-            {
-                text: "LOADING SECURITY PROTOCOLS...",
-                delay: 800,
-                sound: true
-            },
-            {
-                text: "ESTABLISHING SECURE CONNECTION...",
-                delay: 1200,
-                sound: true
-            },
-            {
-                text: "VERIFYING USER CREDENTIALS...",
                 delay: 600,
                 sound: true
             },
             {
+                text: "LOADING SECURITY PROTOCOLS...",
+                delay: 500,
+                sound: true
+            },
+            {
+                text: "ESTABLISHING SECURE CONNECTION...",
+                delay: 700,
+                sound: true
+            },
+            {
+                text: "VERIFYING USER CREDENTIALS...",
+                delay: 400,
+                sound: true
+            },
+            {
                 text: "ACCESSING CLASSIFIED DATABASE...",
-                delay: 1500,
+                delay: 800,
                 sound: true
             },
             {
                 text: "LOADING ENCRYPTION MODULES...",
-                delay: 900,
+                delay: 500,
                 sound: true
             },
             {
                 text: "SYSTEM STATUS: OPERATIONAL",
-                delay: 500,
+                delay: 300,
                 sound: false
             },
             {
                 text: "WELCOME, AGENT.",
-                delay: 1000,
+                delay: 600,
                 sound: false
             },
             {
                 text: "TAA ARCHIVES v1.0 READY FOR ACCESS.",
-                delay: 2000,
+                delay: 1000,
                 sound: false
             }
         ];
@@ -90,7 +90,7 @@ class BootSequence {
         }
         
         // 최종 지연
-        await this.delay(2000);
+        await this.delay(1000);
         
         // 부팅 완료
         this.complete();
@@ -107,7 +107,7 @@ class BootSequence {
                 terminalEffects.playKeyboardSound();
             }
             
-            await this.delay(50 + Math.random() * 30); // 랜덤 타이핑 속도
+            await this.delay(20 + Math.random() * 15); // 더 빠른 타이핑 속도
         }
     }
 
@@ -653,4 +653,14 @@ function initializeBootSequence() {
     }
 }
 
-console.log('TAA Archives: Boot sequence component initialized'); 
+console.log('TAA Archives: Boot sequence component initialized');
+
+// 즉시 부팅 시퀀스 시작 (간단한 방법)
+setTimeout(() => {
+    console.log('Starting boot sequence immediately...');
+    if (window.bootSequence) {
+        bootSequence.start();
+    } else {
+        console.error('Boot sequence not found');
+    }
+}, 1000); 

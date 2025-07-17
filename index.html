@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>중앙정보처리시스템 - 내부 정보 네트워크</title>
+    <title>TAA 아카이브 - 기밀 정보 터미널 접근 시스템</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/terminal.css">
     <link rel="stylesheet" href="styles/wiki.css">
     <link rel="stylesheet" href="styles/notifications.css">
+    <link rel="stylesheet" href="styles/forums.css">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
 </head>
@@ -26,14 +27,14 @@
             </div>
             <div class="login-form">
                 <div class="input-group">
-                    <label for="agent-id">AGENT ID OR EMAIL:</label>
-                    <input type="text" id="agent-id" class="terminal-input" autocomplete="off" placeholder="Enter Agent ID or Email">
+                    <label for="agent-id">에이전트 ID 또는 이메일:</label>
+                    <input type="text" id="agent-id" class="terminal-input" autocomplete="off" placeholder="에이전트 ID 또는 이메일을 입력하세요">
                 </div>
                 <div class="input-group">
-                    <label for="password">PASSWORD:</label>
+                    <label for="password">비밀번호:</label>
                     <input type="password" id="password" class="terminal-input" autocomplete="off">
                 </div>
-                <button id="login-btn" class="terminal-btn">AUTHENTICATE</button>
+                <button id="login-btn" class="terminal-btn">인증</button>
                 <div class="form-switch">
                     <span class="switch-text">계정이 없으신가요? </span>
                     <button id="show-register-btn" class="link-btn">회원가입</button>
@@ -51,7 +52,7 @@
             </div>
             <div class="login-form">
                 <div class="input-group">
-                    <label for="register-agent-id">AGENT ID:</label>
+                    <label for="register-agent-id">에이전트 ID:</label>
                     <div class="input-with-button">
                         <input type="text" id="register-agent-id" class="terminal-input" autocomplete="off">
                         <button type="button" id="check-agent-id-btn" class="check-btn">중복확인</button>
@@ -59,7 +60,7 @@
                     <div id="agent-id-status" class="status-indicator"></div>
                 </div>
                 <div class="input-group">
-                    <label for="register-email">EMAIL:</label>
+                    <label for="register-email">이메일:</label>
                     <div class="input-with-button">
                         <input type="email" id="register-email" class="terminal-input" autocomplete="off">
                         <button type="button" id="check-email-btn" class="check-btn">중복확인</button>
@@ -67,22 +68,22 @@
                     <div id="email-status" class="status-indicator"></div>
                 </div>
                 <div class="input-group">
-                    <label for="register-password">PASSWORD:</label>
+                    <label for="register-password">비밀번호:</label>
                     <input type="password" id="register-password" class="terminal-input" autocomplete="off">
                 </div>
                 <div class="input-group">
-                    <label for="register-confirm-password">CONFIRM PASSWORD:</label>
+                    <label for="register-confirm-password">비밀번호 확인:</label>
                     <input type="password" id="register-confirm-password" class="terminal-input" autocomplete="off">
                 </div>
                 <div class="input-group">
-                    <label for="register-clearance">SECURITY CLEARANCE:</label>
+                    <label for="register-clearance">보안 등급:</label>
                     <select id="register-clearance" class="terminal-input">
-                        <option value="1">LEVEL 1 - 일반 접근</option>
-                        <option value="2">LEVEL 2 - 제한적 접근</option>
-                        <option value="3">LEVEL 3 - 관리자 접근</option>
+                        <option value="1">등급 1 - 일반 접근</option>
+                        <option value="2">등급 2 - 제한적 접근</option>
+                        <option value="3">등급 3 - 관리자 접근</option>
                     </select>
                 </div>
-                <button id="register-btn" class="terminal-btn">REGISTER</button>
+                <button id="register-btn" class="terminal-btn">등록</button>
                 <div class="form-switch">
                     <span class="switch-text">이미 계정이 있으신가요? </span>
                     <button id="show-login-btn" class="link-btn">로그인</button>
@@ -97,16 +98,16 @@
         <!-- 상단 네비게이션 -->
         <nav class="top-nav">
             <div class="nav-left">
-                <span class="system-text">TAA ARCHIVES v1.0</span>
+                <span class="system-text">TAA 아카이브 v1.0</span>
                 <span id="current-time" class="time-display"></span>
             </div>
             <div class="nav-center">
-                <input type="text" id="search-input" class="search-input" placeholder="SEARCH ARCHIVES...">
+                <input type="text" id="search-input" class="search-input" placeholder="아카이브 검색...">
             </div>
             <div class="nav-right">
-                <span id="agent-info" class="agent-info">AGENT: <span id="current-agent">UNKNOWN</span></span>
-                <span id="security-clearance" class="clearance">CLEARANCE: <span id="current-clearance">1</span></span>
-                <button id="logout-btn" class="terminal-btn small">LOGOUT</button>
+                <span id="agent-info" class="agent-info">에이전트: <span id="current-agent">알 수 없음</span></span>
+                <span id="security-clearance" class="clearance">보안등급: <span id="current-clearance">1</span></span>
+                <button id="logout-btn" class="terminal-btn small">로그아웃</button>
             </div>
         </nav>
 
@@ -115,23 +116,24 @@
             <!-- 사이드바 -->
             <aside class="sidebar">
                 <div class="sidebar-section">
-                    <h3 class="section-title">NAVIGATION</h3>
+                    <h3 class="section-title">네비게이션</h3>
                     <ul class="nav-list">
-                        <li><button class="nav-btn active" data-view="home">HOME</button></li>
-                        <li><button class="nav-btn" data-view="recent">RECENT FILES</button></li>
-                        <li><button class="nav-btn" data-view="create">CREATE FILE</button></li>
-                        <li><button class="nav-btn" data-view="history">REVISION HISTORY</button></li>
+                        <li><button class="nav-btn active" data-view="home">홈</button></li>
+                        <li><button class="nav-btn" data-view="recent">최근 파일</button></li>
+                        <li><button class="nav-btn" data-view="create">파일 생성</button></li>
+                        <li><button class="nav-btn" data-view="history">수정 이력</button></li>
+                        <li><button class="nav-btn" data-view="forums">에이전트 포럼</button></li>
                     </ul>
                 </div>
                 
                 <div class="sidebar-section">
-                    <h3 class="section-title">ACTIVE AGENTS</h3>
+                    <h3 class="section-title">활성 에이전트</h3>
                     <div id="ghost-terminals" class="ghost-terminals">
                         <div class="ghost-terminal">
-                            <span class="ghost-text">QUERYING: Case File #M-250712...</span>
+                            <span class="ghost-text">조회 중: 사건 파일 #M-250712...</span>
                         </div>
                         <div class="ghost-terminal">
-                            <span class="ghost-text">ACCESSING: Classified Document #X-1989</span>
+                            <span class="ghost-text">접근 중: 기밀 문서 #X-1989</span>
                         </div>
                     </div>
                 </div>
@@ -142,16 +144,16 @@
                 <!-- 홈 화면 -->
                 <div id="home-view" class="view active">
                     <div class="welcome-message">
-                        <h1>WELCOME TO TAA ARCHIVES</h1>
-                        <p>Terminal Access to Classified Information</p>
+                        <h1>TAA 아카이브에 오신 것을 환영합니다</h1>
+                        <p>기밀 정보 터미널 접근 시스템</p>
                         <div class="quick-actions">
-                            <button class="action-btn" onclick="router.navigate('/create')">CREATE NEW FILE</button>
-                            <button class="action-btn" onclick="router.navigate('/recent')">VIEW RECENT FILES</button>
+                            <button class="action-btn" onclick="router.navigate('/create')">새 파일 생성</button>
+                            <button class="action-btn" onclick="router.navigate('/recent')">최근 파일 보기</button>
                         </div>
                         <!-- 관리자용 마이그레이션 버튼 -->
                         <div id="admin-actions" class="admin-actions" style="display: none;">
-                            <h3>ADMINISTRATIVE FUNCTIONS</h3>
-                            <button id="migrate-accounts-btn" class="terminal-btn warning">MIGRATE ACCOUNTS</button>
+                            <h3>관리자 기능</h3>
+                            <button id="migrate-accounts-btn" class="terminal-btn warning">계정 마이그레이션</button>
                         </div>
                         
 
@@ -162,14 +164,14 @@
                 <div id="create-view" class="view">
                     <div class="file-editor">
                         <div class="editor-header">
-                            <input type="text" id="file-title" class="title-input" placeholder="FILE TITLE">
+                            <input type="text" id="file-title" class="title-input" placeholder="파일 제목">
                             <div class="editor-controls">
-                                <button id="save-btn" class="terminal-btn">SAVE</button>
-                                <button id="preview-btn" class="terminal-btn">PREVIEW</button>
+                                <button id="save-btn" class="terminal-btn">저장</button>
+                                <button id="preview-btn" class="terminal-btn">미리보기</button>
                             </div>
                         </div>
                         <div class="editor-content">
-                            <textarea id="file-content" class="content-textarea" placeholder="ENTER FILE CONTENT...&#10;&#10;Use [[WikiLink]] format for internal links&#10;Use # Heading for sections"></textarea>
+                            <textarea id="file-content" class="content-textarea" placeholder="파일 내용을 입력하세요...&#10;&#10;내부 링크는 [[위키링크]] 형식을 사용하세요&#10;섹션은 # 제목 형식을 사용하세요"></textarea>
                         </div>
                     </div>
                 </div>
@@ -184,9 +186,9 @@
                             <span id="file-clearance"></span>
                         </div>
                         <div class="file-actions">
-                            <button id="edit-btn" class="terminal-btn">EDIT</button>
-                            <button id="history-btn" class="terminal-btn">HISTORY</button>
-                            <button id="discussion-btn" class="terminal-btn">DISCUSSION</button>
+                            <button id="edit-btn" class="terminal-btn">편집</button>
+                            <button id="history-btn" class="terminal-btn">이력</button>
+                            <button id="discussion-btn" class="terminal-btn">토론</button>
                         </div>
                     </div>
                     
@@ -197,18 +199,18 @@
 
                     <!-- 댓글 섹션 -->
                     <div class="comments-section">
-                        <h3>RECORD ANALYSIS</h3>
+                        <h3>분석 기록</h3>
                         <div id="comments-container"></div>
                         <div class="comment-form">
-                            <textarea id="comment-input" class="comment-textarea" placeholder="ENTER ANALYSIS..."></textarea>
-                            <button id="submit-comment" class="terminal-btn">SUBMIT</button>
+                            <textarea id="comment-input" class="comment-textarea" placeholder="분석 내용을 입력하세요..."></textarea>
+                            <button id="submit-comment" class="terminal-btn">제출</button>
                         </div>
                     </div>
                 </div>
 
                 <!-- 최근 파일 화면 -->
                 <div id="recent-view" class="view">
-                    <h2>RECENT FILES</h2>
+                    <h2>최근 파일</h2>
                     <div id="recent-files-list" class="files-list"></div>
                 </div>
 
@@ -218,8 +220,8 @@
                         <div class="editor-header">
                             <input type="text" id="edit-title" class="title-input">
                             <div class="editor-controls">
-                                <button id="save-edit-btn" class="terminal-btn">SAVE CHANGES</button>
-                                <button id="cancel-edit-btn" class="terminal-btn">CANCEL</button>
+                                <button id="save-edit-btn" class="terminal-btn">변경사항 저장</button>
+                                <button id="cancel-edit-btn" class="terminal-btn">취소</button>
                             </div>
                         </div>
                         <div class="editor-content">
@@ -230,113 +232,155 @@
 
                 <!-- 히스토리 화면 -->
                 <div id="history-view" class="view">
-                    <h2>REVISION HISTORY</h2>
+                    <h2>수정 이력</h2>
                     <div id="history-list" class="history-list"></div>
                 </div>
 
                 <!-- 논의 화면 -->
                 <div id="discussion-view" class="view">
-                    <h2>DISCUSSION</h2>
+                    <h2>토론</h2>
                     <div id="discussion-container" class="discussion-container"></div>
+                </div>
+
+                <!-- 포럼 메인 화면 -->
+                <div id="forums-main-view" class="view">
+                    <!-- 포럼 메인 컴포넌트가 여기에 로드됩니다 -->
+                </div>
+
+                <!-- 채널 화면 -->
+                <div id="channel-view" class="view">
+                    <!-- 채널 컴포넌트가 여기에 로드됩니다 -->
+                </div>
+
+                <!-- 스레드 화면 -->
+                <div id="thread-view" class="view">
+                    <!-- 스레드 컴포넌트가 여기에 로드됩니다 -->
+                </div>
+
+                <!-- 스레드 생성 화면 -->
+                <div id="create-thread-view" class="view">
+                    <div class="thread-editor">
+                        <div class="editor-header">
+                            <input type="text" id="thread-title" class="title-input" placeholder="스레드 제목">
+                            <div class="editor-controls">
+                                <button id="create-thread-btn" class="terminal-btn">스레드 생성</button>
+                                <button id="preview-thread-btn" class="terminal-btn">미리보기</button>
+                            </div>
+                        </div>
+                        <div class="editor-content">
+                            <textarea id="thread-content" class="content-textarea" placeholder="스레드 내용을 입력하세요...&#10;&#10;섹션은 # 제목 형식을 사용하세요&#10;강조는 **굵게** 형식을 사용하세요&#10;코드는 `코드` 형식을 사용하세요"></textarea>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- 관리자 로그인 화면 -->
+    <!-- 관리자 로그인 화면 - 새로운 디자인 -->
     <div id="admin-login-screen" class="admin-login-screen hidden">
         <div class="admin-login-container">
-            <!-- 관리자 로그인 배경 효과 -->
-            <div class="admin-bg-grid"></div>
-            <div class="admin-bg-scanlines"></div>
+            <!-- 배경 효과 -->
+            <div class="admin-bg-pattern"></div>
+            <div class="admin-bg-overlay"></div>
             
-            <!-- 관리자 로그인 메인 윈도우 -->
-            <div class="admin-login-window">
+            <!-- 메인 로그인 카드 -->
+            <div class="admin-login-card">
                 <!-- 상단 헤더 -->
-                <div class="admin-login-header">
-                    <div class="admin-logo">
-                        <div class="admin-logo-icon">⚡</div>
-                        <div class="admin-logo-text">
-                            <h1 class="admin-system-title">TAA ARCHIVES</h1>
-                            <h2 class="admin-access-title">ADMINISTRATOR ACCESS</h2>
+                <div class="admin-header">
+                    <div class="admin-brand">
+                        <div class="admin-logo">
+                            <div class="logo-symbol">⚡</div>
+                            <div class="logo-text">
+                                <h1>TAA ARCHIVES</h1>
+                                <p>Administrative Console</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="admin-security-level">
-                        <span class="security-badge">LEVEL 5 CLEARANCE REQUIRED</span>
+                    <div class="admin-status">
+                        <div class="status-indicator">
+                            <span class="status-dot"></span>
+                            <span class="status-text">SYSTEM ONLINE</span>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- 보안 경고 메시지 -->
-                <div class="admin-security-warning">
-                    <div class="warning-icon">⚠️</div>
-                    <div class="warning-text">
-                        <strong>SECURITY NOTICE:</strong> Unauthorized access attempts will be logged and reported.
+                <!-- 로그인 섹션 -->
+                <div class="admin-login-section">
+                    <div class="login-header">
+                        <h2>Administrator Authentication</h2>
+                        <p>Enter your credentials to access the administrative panel</p>
                     </div>
+                    
+                    <form id="admin-login-form" class="admin-login-form">
+                        <div class="form-group">
+                            <label for="admin-id" class="form-label">
+                                <span class="label-icon">👤</span>
+                                Administrator ID
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="text" id="admin-id" class="form-input" 
+                                       placeholder="Enter your administrator ID" 
+                                       value="apostleloannes">
+                                <div class="input-focus-border"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="admin-password" class="form-label">
+                                <span class="label-icon">🔒</span>
+                                Security Password
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="password" id="admin-password" class="form-input" 
+                                       placeholder="Enter your security password"
+                                       value="eoqusdls0823!">
+                                <div class="input-focus-border"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="admin-security-confirm" required>
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-text">I confirm that I am an authorized system administrator</span>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="login-button">
+                            <span class="button-icon">🔐</span>
+                            <span class="button-text">Authenticate</span>
+                            <div class="button-loader" id="admin-btn-loading"></div>
+                        </button>
+                    </form>
+                    
+                    <!-- 상태 메시지 -->
+                    <div id="admin-login-status" class="status-message"></div>
                 </div>
                 
-                <!-- 로그인 폼 -->
-                <form id="admin-login-form" class="admin-login-form">
-                    <div class="admin-input-group">
-                        <label for="admin-id" class="admin-label">
-                            <span class="label-icon">👤</span>
-                            ADMINISTRATOR ID
-                        </label>
-                        <input type="text" id="admin-id" class="admin-input" 
-                               placeholder="Enter Administrator ID" 
-                               value="apostleloannes">
-                        <div class="input-border"></div>
-                    </div>
-                    
-                    <div class="admin-input-group">
-                        <label for="admin-password" class="admin-label">
-                            <span class="label-icon">🔒</span>
-                            SECURITY PASSWORD
-                        </label>
-                        <input type="password" id="admin-password" class="admin-input" 
-                               placeholder="Enter Security Password"
-                               value="eoqusdls0823!">
-                        <div class="input-border"></div>
-                    </div>
-                    
-                    <!-- 보안 확인 체크박스 -->
-                    <div class="admin-security-check">
-                        <label class="security-checkbox">
-                            <input type="checkbox" id="admin-security-confirm" required>
-                            <span class="checkmark"></span>
-                            I confirm that I am an authorized system administrator
-                        </label>
-                    </div>
-                    
-                    <button type="submit" class="admin-login-btn">
-                        <span class="btn-icon">🔐</span>
-                        <span class="btn-text">AUTHENTICATE ADMIN</span>
-                        <div class="btn-loading" id="admin-btn-loading"></div>
-                    </button>
-                </form>
-                
-                <!-- 상태 메시지 -->
-                <div id="admin-login-status" class="admin-status-text"></div>
-                
-                <!-- 하단 링크 -->
+                <!-- 하단 정보 -->
                 <div class="admin-footer">
-                    <div class="admin-back-link">
-                        <button onclick="router.navigate('/')" class="admin-link-btn">
-                            <span class="link-icon">←</span>
-                            <span class="link-text">Return to Main System</span>
+                    <div class="footer-left">
+                        <button onclick="router.navigate('/')" class="back-button">
+                            <span class="back-icon">←</span>
+                            <span>Back to Main System</span>
                         </button>
                     </div>
-                    <div class="admin-timestamp">
-                        <span class="timestamp-label">ACCESS ATTEMPT:</span>
-                        <span class="timestamp-value" id="admin-timestamp"></span>
+                    <div class="footer-right">
+                        <div class="session-info">
+                            <span class="info-label">Session:</span>
+                            <span class="info-value" id="admin-timestamp"></span>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- 관리자 로그인 배경 장식 -->
-            <div class="admin-bg-decoration">
-                <div class="admin-bg-circle circle-1"></div>
-                <div class="admin-bg-circle circle-2"></div>
-                <div class="admin-bg-circle circle-3"></div>
+            <!-- 배경 장식 요소들 -->
+            <div class="admin-decoration">
+                <div class="decoration-line line-1"></div>
+                <div class="decoration-line line-2"></div>
+                <div class="decoration-dot dot-1"></div>
+                <div class="decoration-dot dot-2"></div>
+                <div class="decoration-dot dot-3"></div>
             </div>
         </div>
     </div>
@@ -398,6 +442,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-functions-compat.js"></script>
 
     <!-- 애플리케이션 스크립트 -->
     <script src="js/config/firebase-config.js"></script>
@@ -412,11 +457,34 @@
     <script src="js/services/admin-auth-service.js"></script>
     <script src="js/services/file-service.js"></script>
     <script src="js/services/comment-service.js"></script>
+    <script src="js/services/cloud-functions-service.js"></script>
     <script src="js/components/boot-sequence.js"></script>
     <script src="js/components/ghost-terminals.js"></script>
     <script src="js/components/file-editor.js"></script>
     <script src="js/components/comments.js"></script>
     <script src="js/components/admin-dashboard.js"></script>
+    <script src="js/components/article-list.js"></script>
+    <script src="js/components/wiki-editor.js"></script>
+    <script src="js/components/forums/forums-main.js"></script>
+    <script src="js/components/forums/channel-page.js"></script>
+    <script src="js/components/forums/thread-page.js"></script>
+    <script src="js/components/wiki-enhanced.js"></script>
     <script src="js/app.js"></script>
+    
+    <!-- 부팅 시퀀스 즉시 시작 -->
+    <script>
+        // 모든 스크립트 로드 후 부팅 시퀀스 시작
+        window.addEventListener('load', () => {
+            console.log('All resources loaded, starting boot sequence...');
+            setTimeout(() => {
+                if (window.bootSequence) {
+                    console.log('Starting boot sequence...');
+                    bootSequence.start();
+                } else {
+                    console.error('Boot sequence not available');
+                }
+            }, 500);
+        });
+    </script>
 </body>
 </html> 

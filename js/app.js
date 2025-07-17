@@ -102,13 +102,19 @@ class TAAApp {
 
     // 네비게이션 설정
     setupNavigation() {
-        // 네비게이션 버튼 활성화 상태 관리
+        // 네비게이션 버튼 클릭 이벤트 설정
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
+                const viewName = e.target.dataset.view;
+                console.log(`Navigation clicked: ${viewName}`);
+                
                 // 모든 버튼에서 active 클래스 제거
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
                 // 클릭된 버튼에 active 클래스 추가
                 e.target.classList.add('active');
+                
+                // 해당 뷰로 이동
+                this.navigateToView(viewName);
             });
         });
     }
@@ -128,6 +134,9 @@ class TAAApp {
                     break;
                 case 'history':
                     window.router.navigate('/history');
+                    break;
+                case 'forums':
+                    window.router.navigate('/forums');
                     break;
                 default:
                     this.showView(viewName);
@@ -202,8 +211,16 @@ class TAAApp {
             currentView.classList.remove('active');
         }
 
+        // 뷰 ID 매핑
+        let viewId = `${viewName}-view`;
+        
+        // 특별한 경우 처리
+        if (viewName === 'forums') {
+            viewId = 'forums-main-view';
+        }
+
         // 새 뷰 표시
-        const newView = document.getElementById(`${viewName}-view`);
+        const newView = document.getElementById(viewId);
         if (newView) {
             newView.classList.add('active');
             this.currentView = viewName;
@@ -215,6 +232,8 @@ class TAAApp {
             
             // 뷰별 초기화
             this.initializeView(viewName);
+        } else {
+            console.error(`View not found: ${viewId}`);
         }
     }
 
@@ -257,6 +276,20 @@ class TAAApp {
             case 'history':
                 this.initializeHistoryView();
                 break;
+            case 'forums':
+                this.initializeForumsView();
+                break;
+            case 'channel':
+                this.initializeChannelView();
+                break;
+            case 'thread':
+                this.initializeThreadView();
+                break;
+            case 'create-thread':
+                this.initializeCreateThreadView();
+                break;
+            default:
+                console.log(`Unknown view: ${viewName}`);
         }
     }
 
@@ -270,7 +303,8 @@ class TAAApp {
             console.error('Error loading recent files:', error);
         }
         
-
+        // 관리자 기능 숨기기 (일반 모드에서는 보이지 않음)
+        this.hideAdminFeatures();
     }
 
     // 최근 파일 뷰 초기화
@@ -294,13 +328,11 @@ class TAAApp {
 
     // 히스토리 뷰 초기화
     async initializeHistoryView() {
-        if (this.currentFile) {
-            try {
-                const history = await fileService.getFileHistory(this.currentFile.id);
-                this.displayFileHistory(history);
-            } catch (error) {
-                console.error('Error loading file history:', error);
-            }
+        try {
+            const history = await fileService.getFileHistory();
+            this.displayFileHistory(history);
+        } catch (error) {
+            console.error('Error loading history:', error);
         }
     }
 
@@ -368,24 +400,29 @@ class TAAApp {
 
     // 파일 표시
     displayFile(file) {
-        // 파일 제목
-        const fileDisplayTitle = document.getElementById('file-display-title');
-        if (fileDisplayTitle) fileDisplayTitle.textContent = file.title;
+        this.currentFile = file;
         
-        // 파일 메타데이터
-        const fileAuthor = document.getElementById('file-author');
-        const fileDate = document.getElementById('file-date');
-        const fileClearance = document.getElementById('file-clearance');
+        // 파일 정보 표시
+        const titleElement = document.getElementById('file-display-title');
+        const authorElement = document.getElementById('file-author');
+        const dateElement = document.getElementById('file-date');
+        const clearanceElement = document.getElementById('file-clearance');
         
-        if (fileAuthor) fileAuthor.textContent = `Author: ${file.authorName}`;
-        if (fileDate) fileDate.textContent = `Updated: ${this.formatDate(file.updatedAt)}`;
-        if (fileClearance) fileClearance.textContent = `Clearance: ${file.requiredClearance}`;
+        if (titleElement) titleElement.textContent = file.title;
+        if (authorElement) authorElement.textContent = `By: ${file.authorName || 'Unknown'}`;
+        if (dateElement) dateElement.textContent = `Updated: ${this.formatDate(file.updatedAt)}`;
+        if (clearanceElement) clearanceElement.textContent = `Clearance: ${file.requiredClearance || 1}`;
         
         // 파일 내용 파싱 및 표시
         this.parseAndDisplayFileContent(file.content);
         
-        // 목차 생성
-        this.generateTableOfContents(file.content);
+        // 향상된 위키 기능 초기화
+        if (window.wikiEnhanced) {
+            window.wikiEnhanced.initializeWikiFeatures(file);
+        }
+        
+        // 파일 보기 화면으로 전환
+        this.showView('file');
     }
 
     // 파일 내용 파싱 및 표시
@@ -770,6 +807,22 @@ class TAAApp {
         ghostTerminals.cleanup();
     }
 
+    // 관리자 기능 숨기기
+    hideAdminFeatures() {
+        const adminActions = document.getElementById('admin-actions');
+        if (adminActions) {
+            adminActions.style.display = 'none';
+        }
+    }
+
+    // 관리자 기능 표시하기
+    showAdminFeatures() {
+        const adminActions = document.getElementById('admin-actions');
+        if (adminActions) {
+            adminActions.style.display = 'block';
+        }
+    }
+
     // 마이그레이션 상태 확인
     async checkMigrationStatus() {
         try {
@@ -784,6 +837,95 @@ class TAAApp {
         }
     }
 
+    // 포럼 뷰 초기화
+    initializeForumsView() {
+        console.log('Initializing forums view...');
+        if (window.forumsMain) {
+            console.log('ForumsMain found, loading channels...');
+            window.forumsMain.loadChannels();
+        } else {
+            console.error('ForumsMain not found!');
+        }
+    }
+
+    // 채널 뷰 초기화
+    initializeChannelView() {
+        if (window.channelPage && window.currentChannelId) {
+            window.channelPage.loadChannel(window.currentChannelId);
+        }
+    }
+
+    // 스레드 뷰 초기화
+    initializeThreadView() {
+        if (window.threadPage && window.currentChannelId && window.currentThreadId) {
+            window.threadPage.loadThread(window.currentChannelId, window.currentThreadId);
+        }
+    }
+
+    // 스레드 생성 뷰 초기화
+    initializeCreateThreadView() {
+        // 스레드 생성 폼 초기화
+        const threadTitle = document.getElementById('thread-title');
+        const threadContent = document.getElementById('thread-content');
+        
+        if (threadTitle && threadContent) {
+            threadTitle.value = '';
+            threadContent.value = '';
+            
+            // 이벤트 리스너 설정
+            const createThreadBtn = document.getElementById('create-thread-btn');
+            if (createThreadBtn) {
+                createThreadBtn.onclick = () => this.createNewThread();
+            }
+        }
+    }
+
+    // 새 스레드 생성
+    async createNewThread() {
+        const threadTitle = document.getElementById('thread-title');
+        const threadContent = document.getElementById('thread-content');
+        
+        if (!threadTitle || !threadContent) {
+            console.error('Thread form elements not found');
+            return;
+        }
+
+        const title = threadTitle.value.trim();
+        const content = threadContent.value.trim();
+
+        if (!title) {
+            if (window.terminalEffects) {
+                terminalEffects.showError('스레드 제목을 입력해주세요.');
+            }
+            return;
+        }
+
+        if (!content) {
+            if (window.terminalEffects) {
+                terminalEffects.showError('스레드 내용을 입력해주세요.');
+            }
+            return;
+        }
+
+        try {
+            // 실제로는 API 호출
+            console.log('Creating new thread:', { title, content, channelId: window.currentChannelId });
+            
+            if (window.terminalEffects) {
+                terminalEffects.showSuccess('스레드가 성공적으로 생성되었습니다.');
+            }
+
+            // 채널 페이지로 돌아가기
+            if (window.currentChannelId && window.router) {
+                window.router.navigate(`/forums/${window.currentChannelId}`);
+            }
+        } catch (error) {
+            console.error('Error creating thread:', error);
+            if (window.terminalEffects) {
+                terminalEffects.showError('스레드 생성 중 오류가 발생했습니다.');
+            }
+        }
+    }
 
 }
 
@@ -803,7 +945,52 @@ window.loadFile = (fileId) => app.loadFile(fileId);
 
 console.log('TAA Archives: Main application initialized');
 
-// 모든 스크립트 로드 완료 후 부팅 시퀀스 초기화
+// DOM이 로드된 후 부팅 시퀀스 초기화
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, initializing boot sequence...');
+    
+    // 모든 필수 컴포넌트가 로드되었는지 확인
+    const requiredComponents = [
+        'bootSequence',
+        'sessionManager', 
+        'terminalEffects',
+        'authService'
+    ];
+    
+    const missingComponents = requiredComponents.filter(comp => !window[comp]);
+    
+    if (missingComponents.length > 0) {
+        console.warn('Missing components:', missingComponents);
+        // 1초 후 다시 시도
+        setTimeout(() => {
+            if (window.initializeBootSequence) {
+                console.log('Retrying boot sequence initialization...');
+                initializeBootSequence();
+            } else {
+                console.error('initializeBootSequence function still not found');
+                // 강제로 부팅 시퀀스 시작
+                if (window.bootSequence) {
+                    console.log('Forcing boot sequence start...');
+                    bootSequence.start();
+                }
+            }
+        }, 1000);
+    } else {
+        console.log('All components loaded, starting boot sequence...');
+        if (window.initializeBootSequence) {
+            initializeBootSequence();
+        } else {
+            console.error('initializeBootSequence function not found');
+            // 강제로 부팅 시퀀스 시작
+            if (window.bootSequence) {
+                console.log('Forcing boot sequence start...');
+                bootSequence.start();
+            }
+        }
+    }
+});
+
+// 모든 스크립트 로드 완료 후 부팅 시퀀스 초기화 (백업)
 if (window.initializeBootSequence) {
     console.log('Initializing boot sequence from app.js');
     initializeBootSequence();

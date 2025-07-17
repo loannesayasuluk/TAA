@@ -333,7 +333,7 @@ class AdminAuthService {
 
         try {
             statusElement.textContent = 'ADMIN AUTHENTICATING...';
-            statusElement.className = 'admin-status-text';
+            statusElement.className = 'status-message';
 
             // Firebase Auth로 로그인
             const userCredential = await auth.signInWithEmailAndPassword(
@@ -374,6 +374,11 @@ class AdminAuthService {
                 adminId: adminId,
                 loginTime: new Date().toISOString()
             });
+            
+            // 관리자 기능 표시
+            if (window.taaApp) {
+                window.taaApp.showAdminFeatures();
+            }
             
             // 관리자 대시보드로 이동
             setTimeout(() => {
@@ -418,6 +423,11 @@ class AdminAuthService {
             // 실시간 리스너 정리
             this.cleanupRealtimeListeners();
             
+            // 관리자 기능 숨기기
+            if (window.taaApp) {
+                window.taaApp.hideAdminFeatures();
+            }
+            
             // 관리자 대시보드 숨기기
             if (window.adminDashboard) {
                 window.adminDashboard.hide();
@@ -450,13 +460,13 @@ class AdminAuthService {
         const statusElement = document.getElementById('admin-login-status');
         if (statusElement) {
             statusElement.textContent = message;
-            statusElement.className = `admin-status-text ${type}`;
+            statusElement.className = `status-message ${type}`;
         }
     }
 
     // 로딩 상태 설정
     setLoadingState(isLoading) {
-        const loginBtn = document.querySelector('.admin-login-btn');
+        const loginBtn = document.querySelector('.login-button');
         if (loginBtn) {
             if (isLoading) {
                 loginBtn.classList.add('loading');
@@ -473,7 +483,7 @@ class AdminAuthService {
         const adminId = document.getElementById('admin-id')?.value.trim();
         const adminPassword = document.getElementById('admin-password')?.value;
         const securityConfirm = document.getElementById('admin-security-confirm')?.checked;
-        const loginBtn = document.querySelector('.admin-login-btn');
+        const loginBtn = document.querySelector('.login-button');
 
         if (loginBtn) {
             const isValid = adminId && adminPassword && securityConfirm;

@@ -333,7 +333,7 @@ class AuthService {
             }
         } catch (error) {
             console.error('Error loading user profile:', error);
-            showNotification('사용자 프로필 로드 실패', 'error');
+            // 알림 제거 - 사용자 프로필 로드 실패 알림을 표시하지 않음
         }
     }
 
@@ -355,7 +355,7 @@ class AuthService {
             this.securityClearance = 1;
         } catch (error) {
             console.error('Error creating user profile:', error);
-            showNotification('사용자 프로필 생성 실패', 'error');
+            // 알림 제거 - 사용자 프로필 생성 실패 알림을 표시하지 않음
         }
     }
 
@@ -396,6 +396,11 @@ class AuthService {
             sessionManager.setCurrentScreen('main');
         }
         
+        // 관리자 기능 숨기기 (일반 사용자는 관리자 기능에 접근 불가)
+        if (window.taaApp) {
+            window.taaApp.hideAdminFeatures();
+        }
+        
         // 터미널 효과 시작
         if (window.terminalEffects) {
             terminalEffects.toggleFanSound(true);
@@ -431,23 +436,17 @@ class AuthService {
             document.getElementById('current-agent').textContent = this.currentUser.displayName || 'Unknown Agent';
             document.getElementById('current-clearance').textContent = this.securityClearance;
             
-            // 관리자 권한에 따라 관리자 기능 표시
-            const adminActions = document.getElementById('admin-actions');
-            if (adminActions) {
-                if (this.securityClearance >= 3) {
-                    adminActions.style.display = 'block';
-                } else {
-                    adminActions.style.display = 'none';
-                }
+            // 일반 사용자는 관리자 기능에 접근 불가 (관리자 모드에서만 접근 가능)
+            if (window.taaApp) {
+                window.taaApp.hideAdminFeatures();
             }
         } else {
-            document.getElementById('current-agent').textContent = 'UNKNOWN';
+            document.getElementById('current-agent').textContent = '알 수 없음';
             document.getElementById('current-clearance').textContent = '1';
             
             // 관리자 기능 숨기기
-            const adminActions = document.getElementById('admin-actions');
-            if (adminActions) {
-                adminActions.style.display = 'none';
+            if (window.taaApp) {
+                window.taaApp.hideAdminFeatures();
             }
         }
     }

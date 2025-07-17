@@ -81,6 +81,34 @@ class Router {
             view: 'admin',
             handler: () => this.showAdminDashboardView()
         });
+
+        // 포럼 메인 페이지
+        this.addRoute('/forums', {
+            title: 'TAA Archives - Agent Forums',
+            view: 'forums',
+            handler: () => this.showForumsMainView()
+        });
+
+        // 채널 페이지
+        this.addRoute('/forums/:channelId', {
+            title: 'TAA Archives - Channel',
+            view: 'channel',
+            handler: (params) => this.showChannelView(params.channelId)
+        });
+
+        // 스레드 페이지
+        this.addRoute('/forums/:channelId/thread/:threadId', {
+            title: 'TAA Archives - Thread',
+            view: 'thread',
+            handler: (params) => this.showThreadView(params.channelId, params.threadId)
+        });
+
+        // 스레드 생성 페이지
+        this.addRoute('/forums/:channelId/create', {
+            title: 'TAA Archives - Create Thread',
+            view: 'create-thread',
+            handler: (params) => this.showCreateThreadView(params.channelId)
+        });
     }
 
     // 라우트 추가
@@ -196,24 +224,51 @@ class Router {
         try {
             // 메인 앱이 로드되었는지 확인
             if (window.taaApp) {
+                // 부드러운 전환 효과 시작
+                this.startTransition();
+                
                 // 뷰 전환 (URL 업데이트 없이)
                 if (route.config.view) {
                     window.taaApp.showViewWithoutRoute(route.config.view);
                 }
                 
-                // 라우트별 핸들러 실행
+                // 라우트 핸들러 실행
                 if (route.config.handler) {
                     route.config.handler(route.params);
                 }
+                
+                // 전환 효과 완료
+                this.completeTransition();
             } else {
-                // 메인 앱이 아직 로드되지 않은 경우 세션에 저장
-                if (window.sessionManager) {
-                    sessionManager.setPendingRoute(path);
-                }
+                // 메인 앱이 로드되지 않은 경우 대기
+                setTimeout(() => {
+                    this.executeRouteHandler(route, path);
+                }, 100);
             }
         } catch (error) {
-            console.error('Route handler error:', error);
+            console.error('Route handler execution error:', error);
             this.handleNotFound();
+        }
+    }
+
+    // 전환 효과 시작
+    startTransition() {
+        const contentArea = document.querySelector('.content-area');
+        if (contentArea) {
+            contentArea.style.opacity = '0';
+            contentArea.style.transform = 'translateX(20px)';
+            contentArea.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        }
+    }
+
+    // 전환 효과 완료
+    completeTransition() {
+        const contentArea = document.querySelector('.content-area');
+        if (contentArea) {
+            setTimeout(() => {
+                contentArea.style.opacity = '1';
+                contentArea.style.transform = 'translateX(0)';
+            }, 50);
         }
     }
 
@@ -330,39 +385,42 @@ class Router {
         }
     }
 
-    // 관리자 대시보드 화면 표시
+    // 관리자 대시보드 표시
     showAdminDashboardView() {
-        console.log('Router: Showing admin dashboard view');
-        
-        // 모든 화면 숨기기
-        const allScreens = [
-            'boot-sequence',
-            'login-screen', 
-            'register-screen',
-            'main-app',
-            'admin-login-screen'
-        ];
-        
-        allScreens.forEach(screenId => {
-            const screen = document.getElementById(screenId);
-            if (screen) {
-                screen.classList.add('hidden');
-            }
-        });
-        
-        // 관리자 대시보드 표시
-        if (window.adminDashboard) {
-            console.log('Router: Using admin dashboard component');
-            window.adminDashboard.show();
-        } else {
-            console.log('Router: Showing admin dashboard directly');
-            const adminDashboard = document.getElementById('admin-dashboard');
-            if (adminDashboard) {
-                adminDashboard.classList.remove('hidden');
-            } else {
-                console.error('Router: Admin dashboard not found!');
+        const adminDashboard = document.getElementById('admin-dashboard');
+        if (adminDashboard) {
+            adminDashboard.classList.remove('hidden');
+            if (window.adminDashboard) {
+                adminDashboard.loadAdminData();
             }
         }
+    }
+
+    // 포럼 메인 페이지 표시
+    showForumsMainView() {
+        if (window.forumsMain) {
+            window.forumsMain.loadChannels();
+        }
+    }
+
+    // 채널 페이지 표시
+    showChannelView(channelId) {
+        if (window.channelPage) {
+            window.channelPage.loadChannel(channelId);
+        }
+    }
+
+    // 스레드 페이지 표시
+    showThreadView(channelId, threadId) {
+        if (window.threadPage) {
+            window.threadPage.loadThread(channelId, threadId);
+        }
+    }
+
+    // 스레드 생성 페이지 표시
+    showCreateThreadView(channelId) {
+        // 스레드 생성 페이지 초기화
+        window.currentChannelId = channelId;
     }
 
     // 현재 라우트 정보 반환

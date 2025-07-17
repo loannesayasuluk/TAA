@@ -15,6 +15,11 @@ class NotificationSystem {
     }
 
     show(message, type = 'info', duration = 5000) {
+        // 사용자 프로필 관련 알림은 표시하지 않음
+        if (message.includes('사용자 프로필') || message.includes('프로필')) {
+            return null;
+        }
+        
         const notification = {
             id: Date.now() + Math.random(),
             message: message,
