@@ -1024,11 +1024,12 @@ class TAAApp {
     // 포럼 뷰 초기화
     initializeForumsView() {
         console.log('Initializing forums view...');
-        if (window.forumsMain) {
-            console.log('ForumsMain found, loading channels...');
-            window.forumsMain.loadChannels();
+        const container = document.querySelector('.content-area');
+        if (container && window.forumsMain) {
+            console.log('ForumsMain found, initializing...');
+            window.forumsMain.init(container);
         } else {
-            console.error('ForumsMain not found!');
+            console.error('ForumsMain not found or container not found!');
         }
     }
 
