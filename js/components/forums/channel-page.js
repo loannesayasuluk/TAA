@@ -95,63 +95,242 @@ class ChannelPage {
     // 스레드 목록 로드
     async loadThreads(channelId) {
         // 실제로는 API에서 가져와야 함
-        this.threads = [
-            {
-                id: 'thread-1',
-                title: 'New surveillance equipment deployment',
-                author: 'Agent_Alpha',
-                timestamp: new Date(Date.now() - 1800000),
-                votes: 15,
-                replies: 8,
-                isValidated: true,
-                status: 'active',
-                userVoted: false
-            },
-            {
-                id: 'thread-2',
-                title: 'Field report: Operation Nightfall',
-                author: 'Agent_Beta',
-                timestamp: new Date(Date.now() - 3600000),
-                votes: 23,
-                replies: 12,
-                isValidated: true,
-                status: 'active',
-                userVoted: false
-            },
-            {
-                id: 'thread-3',
-                title: 'System maintenance schedule',
-                author: 'Agent_Gamma',
-                timestamp: new Date(Date.now() - 5400000),
-                votes: 7,
-                replies: 3,
-                isValidated: false,
-                status: 'active',
-                userVoted: false
-            },
-            {
-                id: 'thread-4',
-                title: 'Intelligence briefing: Sector 7',
-                author: 'Agent_Delta',
-                timestamp: new Date(Date.now() - 7200000),
-                votes: 31,
-                replies: 15,
-                isValidated: true,
-                status: 'pinned',
-                userVoted: false
-            },
-            {
-                id: 'thread-5',
-                title: 'Training session feedback',
-                author: 'Agent_Echo',
-                timestamp: new Date(Date.now() - 9000000),
-                votes: 12,
-                replies: 6,
-                isValidated: false,
-                status: 'active',
-                userVoted: false
-            }
-        ];
+        const allThreads = {
+            'general-discussion': [
+                {
+                    id: 'thread-1',
+                    title: '새로운 감시 장비 배치',
+                    author: 'Agent_Alpha',
+                    timestamp: new Date(Date.now() - 1800000),
+                    votes: 15,
+                    replies: 8,
+                    isValidated: true,
+                    status: 'active',
+                    userVoted: false
+                },
+                {
+                    id: 'thread-2',
+                    title: '현장 보고서: 작전 나이트폴',
+                    author: 'Agent_Beta',
+                    timestamp: new Date(Date.now() - 3600000),
+                    votes: 23,
+                    replies: 12,
+                    isValidated: true,
+                    status: 'active',
+                    userVoted: false
+                },
+                {
+                    id: 'thread-3',
+                    title: '시스템 유지보수 일정',
+                    author: 'Agent_Gamma',
+                    timestamp: new Date(Date.now() - 5400000),
+                    votes: 7,
+                    replies: 3,
+                    isValidated: false,
+                    status: 'active',
+                    userVoted: false
+                },
+                {
+                    id: 'thread-4',
+                    title: '인텔리전스 브리핑: 섹터 7',
+                    author: 'Agent_Delta',
+                    timestamp: new Date(Date.now() - 7200000),
+                    votes: 31,
+                    replies: 15,
+                    isValidated: true,
+                    status: 'pinned',
+                    userVoted: false
+                },
+                {
+                    id: 'thread-5',
+                    title: '교육 세션 피드백',
+                    author: 'Agent_Echo',
+                    timestamp: new Date(Date.now() - 9000000),
+                    votes: 12,
+                    replies: 6,
+                    isValidated: false,
+                    status: 'active',
+                    userVoted: false
+                }
+            ],
+            'classified-intel': [
+                {
+                    id: 'intel-1',
+                    title: '고급 감시 기법 분석',
+                    author: 'Agent_Alpha',
+                    timestamp: new Date(Date.now() - 1200000),
+                    votes: 28,
+                    replies: 14,
+                    isValidated: true,
+                    status: 'active',
+                    userVoted: false
+                },
+                {
+                    id: 'intel-2',
+                    title: '데이터 암호화 표준 업데이트',
+                    author: 'Agent_Gamma',
+                    timestamp: new Date(Date.now() - 2400000),
+                    votes: 19,
+                    replies: 9,
+                    isValidated: true,
+                    status: 'active',
+                    userVoted: false
+                },
+                {
+                    id: 'intel-3',
+                    title: '보안 프로토콜 베타 검토',
+                    author: 'Agent_Delta',
+                    timestamp: new Date(Date.now() - 3600000),
+                    votes: 35,
+                    replies: 18,
+                    isValidated: true,
+                    status: 'pinned',
+                    userVoted: false
+                }
+            ],
+            'mission-reports': [
+                {
+                    id: 'mission-1',
+                    title: '현장 임무 보고서: 작전 나이트폴',
+                    author: 'Agent_Beta',
+                    timestamp: new Date(Date.now() - 1800000),
+                    votes: 42,
+                    replies: 22,
+                    isValidated: true,
+                    status: 'active',
+                    userVoted: false
+                },
+                {
+                    id: 'mission-2',
+                    title: '감시 프로토콜 알파 현장 테스트',
+                    author: 'Agent_Alpha',
+                    timestamp: new Date(Date.now() - 3000000),
+                    votes: 26,
+                    replies: 13,
+                    isValidated: true,
+                    status: 'active',
+                    userVoted: false
+                },
+                {
+                    id: 'mission-3',
+                    title: '인텔리전스 분석 가이드 적용 사례',
+                    author: 'Agent_Delta',
+                    timestamp: new Date(Date.now() - 4200000),
+                    votes: 31,
+                    replies: 16,
+                    isValidated: true,
+                    status: 'active',
+                    userVoted: false
+                }
+            ],
+            'technical-support': [
+                {
+                    id: 'tech-1',
+                    title: '시스템 유지보수 일정 관리',
+                    author: 'Agent_Gamma',
+                    timestamp: new Date(Date.now() - 1500000),
+                    votes: 8,
+                    replies: 4,
+                    isValidated: false,
+                    status: 'active',
+                    userVoted: false
+                },
+                {
+                    id: 'tech-2',
+                    title: '데이터 암호화 표준 구현',
+                    author: 'Agent_Echo',
+                    timestamp: new Date(Date.now() - 2700000),
+                    votes: 14,
+                    replies: 7,
+                    isValidated: false,
+                    status: 'active',
+                    userVoted: false
+                },
+                {
+                    id: 'tech-3',
+                    title: 'TAA 아카이브 운영 가이드',
+                    author: 'Agent_Alpha',
+                    timestamp: new Date(Date.now() - 3900000),
+                    votes: 11,
+                    replies: 5,
+                    isValidated: false,
+                    status: 'active',
+                    userVoted: false
+                }
+            ],
+            'agent-training': [
+                {
+                    id: 'training-1',
+                    title: '교육 세션 피드백 및 개선사항',
+                    author: 'Agent_Echo',
+                    timestamp: new Date(Date.now() - 2000000),
+                    votes: 18,
+                    replies: 9,
+                    isValidated: false,
+                    status: 'active',
+                    userVoted: false
+                },
+                {
+                    id: 'training-2',
+                    title: '에이전트 행동 강령 교육',
+                    author: 'Agent_Alpha',
+                    timestamp: new Date(Date.now() - 3200000),
+                    votes: 22,
+                    replies: 11,
+                    isValidated: false,
+                    status: 'active',
+                    userVoted: false
+                },
+                {
+                    id: 'training-3',
+                    title: '고급 감시 기법 매뉴얼 학습',
+                    author: 'Agent_Beta',
+                    timestamp: new Date(Date.now() - 4400000),
+                    votes: 16,
+                    replies: 8,
+                    isValidated: false,
+                    status: 'active',
+                    userVoted: false
+                }
+            ],
+            'classified-operations': [
+                {
+                    id: 'ops-1',
+                    title: '긴급 상황 대응 매뉴얼 검토',
+                    author: 'Agent_Gamma',
+                    timestamp: new Date(Date.now() - 1000000),
+                    votes: 45,
+                    replies: 23,
+                    isValidated: true,
+                    status: 'pinned',
+                    userVoted: false
+                },
+                {
+                    id: 'ops-2',
+                    title: '최고 기밀 작전 계획',
+                    author: 'Agent_Delta',
+                    timestamp: new Date(Date.now() - 2200000),
+                    votes: 38,
+                    replies: 19,
+                    isValidated: true,
+                    status: 'active',
+                    userVoted: false
+                },
+                {
+                    id: 'ops-3',
+                    title: '특수 임무 브리핑',
+                    author: 'Agent_Alpha',
+                    timestamp: new Date(Date.now() - 3400000),
+                    votes: 52,
+                    replies: 26,
+                    isValidated: true,
+                    status: 'active',
+                    userVoted: false
+                }
+            ]
+        };
+
+        this.threads = allThreads[channelId] || allThreads['general-discussion'];
     }
 
     // 이벤트 리스너 설정

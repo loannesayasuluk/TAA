@@ -12,6 +12,22 @@ class CommentService {
     initCommentService() {
         // 실시간 댓글 업데이트 감지
         this.setupRealtimeComments();
+        
+        // 예시 댓글 생성 (개발 환경에서만)
+        this.createSampleComments();
+    }
+
+    // 예시 댓글 생성
+    async createSampleComments() {
+        try {
+            const snapshot = await db.collection('comments').get();
+            if (snapshot.empty) {
+                console.log('Creating sample comments...');
+                await this.createSampleCommentsForFiles();
+            }
+        } catch (error) {
+            console.error('Error creating sample comments:', error);
+        }
     }
 
     // 실시간 댓글 업데이트 설정
@@ -530,6 +546,147 @@ class CommentService {
         }
         this.commentsCache.clear();
         this.currentFileId = null;
+    }
+
+    // 예시 댓글들 생성
+    async createSampleCommentsForFiles() {
+        const sampleComments = [
+            {
+                fileId: 'sample-file-1',
+                content: '이 프로토콜은 매우 체계적으로 작성되었습니다. 특히 감시 장비 설정 부분이 상세하게 설명되어 있어 현장에서 바로 적용할 수 있을 것 같습니다.',
+                authorName: 'Agent_Beta',
+                isAnonymous: false,
+                recommendations: 5,
+                createdAt: new Date(Date.now() - 86400000 * 2)
+            },
+            {
+                fileId: 'sample-file-1',
+                content: '데이터 수집 절차에서 암호화 부분을 더 강화하면 좋을 것 같습니다. [[데이터 암호화 표준]]과 연계하여 보안을 강화해보시기 바랍니다.',
+                authorName: 'Agent_Gamma',
+                isAnonymous: false,
+                recommendations: 3,
+                createdAt: new Date(Date.now() - 86400000 * 1)
+            },
+            {
+                fileId: 'sample-file-2',
+                content: '작전 나이트폴의 결과가 매우 성공적이었습니다. 대상자의 패턴 분석이 정확했고, 수집된 증거도 품질이 높습니다. 추가 감시가 정말 필요해 보입니다.',
+                authorName: 'Agent_Delta',
+                isAnonymous: false,
+                recommendations: 8,
+                createdAt: new Date(Date.now() - 86400000 * 1)
+            },
+            {
+                fileId: 'sample-file-2',
+                content: '접촉자 네트워크 매핑이 잘 되어 있습니다. 특히 5명의 주요 접촉자 식별은 중요한 성과입니다. 이 정보를 바탕으로 추가 조사를 진행해야겠습니다.',
+                authorName: 'Agent_Echo',
+                isAnonymous: false,
+                recommendations: 4,
+                createdAt: new Date(Date.now() - 86400000 * 1)
+            },
+            {
+                fileId: 'sample-file-3',
+                content: '시스템 유지보수 일정이 잘 계획되어 있습니다. 4주차의 종합 점검 부분에서 성능 최적화 항목을 더 구체화하면 좋을 것 같습니다.',
+                authorName: 'Agent_Alpha',
+                isAnonymous: false,
+                recommendations: 2,
+                createdAt: new Date(Date.now() - 86400000 * 1)
+            },
+            {
+                fileId: 'sample-file-4',
+                content: '섹터 7의 위험도가 높게 평가된 것이 정확합니다. 대상 A의 활동이 [[보안 프로토콜 베타]]에서 정의한 위험 요소와 일치합니다. 즉시 대응이 필요합니다.',
+                authorName: 'Agent_Beta',
+                isAnonymous: false,
+                recommendations: 7,
+                createdAt: new Date(Date.now() - 86400000 * 1)
+            },
+            {
+                fileId: 'sample-file-5',
+                content: '교육 세션이 전반적으로 성공적이었습니다. 실습 중심의 교육 방식이 참석자들의 만족도를 높인 것 같습니다. 다음 세션에서 고급 암호화 기법을 다루는 것이 좋겠습니다.',
+                authorName: 'Agent_Gamma',
+                isAnonymous: false,
+                recommendations: 6,
+                createdAt: new Date(Date.now() - 86400000 * 1)
+            },
+            {
+                fileId: 'sample-file-6',
+                content: '보안 프로토콜 베타의 4단계 보안 레벨 분류가 매우 체계적입니다. 각 레벨별 권한이 명확하게 정의되어 있어 접근 제어가 용이할 것 같습니다.',
+                authorName: 'Agent_Delta',
+                isAnonymous: false,
+                recommendations: 4,
+                createdAt: new Date(Date.now() - 86400000 * 1)
+            },
+            {
+                fileId: 'sample-file-7',
+                content: '데이터 암호화 표준에서 AES-256과 RSA-4096의 조합이 적절합니다. 키 관리 시스템과 정기적인 키 로테이션 계획도 잘 수립되어 있습니다.',
+                authorName: 'Agent_Echo',
+                isAnonymous: false,
+                recommendations: 5,
+                createdAt: new Date(Date.now() - 86400000 * 1)
+            },
+            {
+                fileId: 'sample-file-8',
+                content: '인텔리전스 분석 가이드의 5단계 프로세스가 논리적으로 잘 구성되어 있습니다. 특히 데이터 검증 단계에서 출처 신뢰성 평가가 중요한 포인트입니다.',
+                authorName: 'Agent_Alpha',
+                isAnonymous: false,
+                recommendations: 3,
+                createdAt: new Date(Date.now() - 86400000 * 1)
+            },
+            {
+                fileId: 'sample-file-9',
+                content: '고급 감시 기법 매뉴얼의 기술적 감시 부분이 매우 상세합니다. 전자 감시, 물리적 감시, 사이버 감시의 균형이 잘 맞춰져 있습니다.',
+                authorName: 'Agent_Beta',
+                isAnonymous: false,
+                recommendations: 4,
+                createdAt: new Date(Date.now() - 86400000 * 1)
+            },
+            {
+                fileId: 'sample-file-10',
+                content: '에이전트 행동 강령의 기본 원칙이 명확합니다. 비밀 유지, 전문성, 윤리성의 균형이 잘 잡혀있어 실제 임무 수행에 도움이 될 것 같습니다.',
+                authorName: 'Agent_Gamma',
+                isAnonymous: false,
+                recommendations: 6,
+                createdAt: new Date(Date.now() - 86400000 * 1)
+            },
+            {
+                fileId: 'sample-file-11',
+                content: '긴급 상황 대응 매뉴얼의 4단계 분류가 실용적입니다. 각 레벨별 대응 절차가 명확하게 정의되어 있어 실제 상황에서 빠른 대응이 가능할 것 같습니다.',
+                authorName: 'Agent_Delta',
+                isAnonymous: false,
+                recommendations: 5,
+                createdAt: new Date(Date.now() - 86400000 * 1)
+            },
+            {
+                fileId: 'sample-file-12',
+                content: 'TAA 아카이브 운영 가이드가 시스템의 전체적인 구조를 잘 설명하고 있습니다. 신규 사용자부터 관리자까지 각 역할별 가이드가 체계적으로 정리되어 있습니다.',
+                authorName: 'Agent_Echo',
+                isAnonymous: false,
+                recommendations: 4,
+                createdAt: new Date(Date.now() - 86400000 * 1)
+            }
+        ];
+
+        // 각 예시 댓글 생성
+        for (const commentData of sampleComments) {
+            try {
+                const docRef = await db.collection('comments').add({
+                    ...commentData,
+                    author: commentData.authorName,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    isActive: true,
+                    recommendedBy: [],
+                    isHighlighted: false,
+                    keywords: wikiParser.extractKeywords(commentData.content),
+                    analysisType: this.detectAnalysisType(commentData.content)
+                });
+
+                console.log(`Sample comment created: ${commentData.content.substring(0, 50)}...`);
+            } catch (error) {
+                console.error(`Error creating sample comment:`, error);
+            }
+        }
+
+        console.log('All sample comments created successfully');
     }
 }
 
