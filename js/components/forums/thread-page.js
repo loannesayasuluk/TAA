@@ -161,37 +161,37 @@ This operation serves as a model for future night missions.`,
         // 실제로는 API에서 가져와야 함
         const allComments = {
             'thread-1': [
-                {
-                    id: 'comment-1',
+            {
+                id: 'comment-1',
                     content: '새로운 감시 장비 배치가 매우 성공적이었습니다. 특히 4K 해상도와 야간 시야 기능이 현장에서 큰 도움이 되고 있습니다.',
-                    author: 'Agent_Gamma',
-                    timestamp: new Date(Date.now() - 900000),
-                    votes: 5,
-                    isAgentComment: true
-                },
-                {
-                    id: 'comment-2',
+                author: 'Agent_Gamma',
+                timestamp: new Date(Date.now() - 900000),
+                votes: 5,
+                isAgentComment: true
+            },
+            {
+                id: 'comment-2',
                     content: '훈련 일정에 대해 우려가 있습니다. 새로운 장비의 복잡성을 고려할 때 1주일 정도 연장하는 것이 좋겠습니다.',
-                    author: 'Agent_Delta',
-                    timestamp: new Date(Date.now() - 1200000),
-                    votes: 3,
-                    isAgentComment: true
-                },
-                {
-                    id: 'comment-3',
+                author: 'Agent_Delta',
+                timestamp: new Date(Date.now() - 1200000),
+                votes: 3,
+                isAgentComment: true
+            },
+            {
+                id: 'comment-3',
                     content: '생체 인증 시스템이 완벽하게 작동하고 있습니다. 우리 팀에서 문제 보고는 없었습니다.',
-                    author: 'Agent_Echo',
-                    timestamp: new Date(Date.now() - 1500000),
-                    votes: 7,
-                    isAgentComment: true
-                },
-                {
-                    id: 'comment-4',
+                author: 'Agent_Echo',
+                timestamp: new Date(Date.now() - 1500000),
+                votes: 7,
+                isAgentComment: true
+            },
+            {
+                id: 'comment-4',
                     content: '훈련 모듈을 성공적으로 완료했습니다. 현장 배치 준비가 완료되었습니다.',
-                    author: 'Agent_Foxtrot',
-                    timestamp: new Date(Date.now() - 1800000),
-                    votes: 2,
-                    isAgentComment: true
+                author: 'Agent_Foxtrot',
+                timestamp: new Date(Date.now() - 1800000),
+                votes: 2,
+                isAgentComment: true
                 },
                 {
                     id: 'comment-5',

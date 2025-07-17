@@ -97,58 +97,58 @@ class ChannelPage {
         // 실제로는 API에서 가져와야 함
         const allThreads = {
             'general-discussion': [
-                {
-                    id: 'thread-1',
+            {
+                id: 'thread-1',
                     title: '새로운 감시 장비 배치',
-                    author: 'Agent_Alpha',
-                    timestamp: new Date(Date.now() - 1800000),
-                    votes: 15,
-                    replies: 8,
-                    isValidated: true,
+                author: 'Agent_Alpha',
+                timestamp: new Date(Date.now() - 1800000),
+                votes: 15,
+                replies: 8,
+                isValidated: true,
                     status: 'active',
                     userVoted: false
-                },
-                {
-                    id: 'thread-2',
+            },
+            {
+                id: 'thread-2',
                     title: '현장 보고서: 작전 나이트폴',
-                    author: 'Agent_Beta',
-                    timestamp: new Date(Date.now() - 3600000),
-                    votes: 23,
-                    replies: 12,
-                    isValidated: true,
+                author: 'Agent_Beta',
+                timestamp: new Date(Date.now() - 3600000),
+                votes: 23,
+                replies: 12,
+                isValidated: true,
                     status: 'active',
                     userVoted: false
-                },
-                {
-                    id: 'thread-3',
+            },
+            {
+                id: 'thread-3',
                     title: '시스템 유지보수 일정',
-                    author: 'Agent_Gamma',
-                    timestamp: new Date(Date.now() - 5400000),
-                    votes: 7,
-                    replies: 3,
-                    isValidated: false,
+                author: 'Agent_Gamma',
+                timestamp: new Date(Date.now() - 5400000),
+                votes: 7,
+                replies: 3,
+                isValidated: false,
                     status: 'active',
                     userVoted: false
-                },
-                {
-                    id: 'thread-4',
+            },
+            {
+                id: 'thread-4',
                     title: '인텔리전스 브리핑: 섹터 7',
-                    author: 'Agent_Delta',
-                    timestamp: new Date(Date.now() - 7200000),
-                    votes: 31,
-                    replies: 15,
-                    isValidated: true,
+                author: 'Agent_Delta',
+                timestamp: new Date(Date.now() - 7200000),
+                votes: 31,
+                replies: 15,
+                isValidated: true,
                     status: 'pinned',
                     userVoted: false
-                },
-                {
-                    id: 'thread-5',
+            },
+            {
+                id: 'thread-5',
                     title: '교육 세션 피드백',
-                    author: 'Agent_Echo',
-                    timestamp: new Date(Date.now() - 9000000),
-                    votes: 12,
-                    replies: 6,
-                    isValidated: false,
+                author: 'Agent_Echo',
+                timestamp: new Date(Date.now() - 9000000),
+                votes: 12,
+                replies: 6,
+                isValidated: false,
                     status: 'active',
                     userVoted: false
                 }
@@ -434,7 +434,7 @@ class ChannelPage {
                 <td class="votes-col">
                     <button class="vote-btn ${voteButtonClass}" data-thread-id="${thread.id}" title="추천">
                         <span class="vote-icon">${voteIcon}</span>
-                        <span class="vote-count">${thread.votes}</span>
+                    <span class="vote-count">${thread.votes}</span>
                     </button>
                 </td>
                 <td class="replies-col">
