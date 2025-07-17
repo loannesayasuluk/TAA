@@ -1,5 +1,5 @@
 // TAA Archives - Channel Page Component
-// 특정 채널에 속한 게시물 목록을 보여주는 페이지
+// 특정 채널에 속한 게시물 목록을 보여주는 페이지 (실시간 동기화 지원)
 
 class ChannelPage {
     constructor(containerId = 'channel-view') {
@@ -10,6 +10,9 @@ class ChannelPage {
         this.isLoading = false;
         this.currentPage = 1;
         this.itemsPerPage = 20;
+        this.unsubscribeThreads = null; // 실시간 리스너 해제용
+        this.filterType = 'all'; // all, validated, pinned
+        this.sortType = 'latest'; // latest, votes, replies
         
         this.init();
     }
@@ -34,7 +37,7 @@ class ChannelPage {
             // 채널 정보 로드
             this.currentChannel = await this.getChannelInfo(channelId);
             
-            // 스레드 목록 로드
+            // 스레드 목록 로드 (실시간)
             await this.loadThreads(channelId);
             
             this.render();
@@ -49,42 +52,41 @@ class ChannelPage {
 
     // 채널 정보 가져오기
     async getChannelInfo(channelId) {
-        // 실제로는 API에서 가져와야 함
         const channels = {
             'general-discussion': {
                 id: 'general-discussion',
-                name: 'GENERAL DISCUSSION',
-                description: 'General topics and discussions among agents',
+                name: '자유게시판',
+                description: '일반적인 토론과 정보 공유',
                 requiredClearance: 1
             },
             'classified-intel': {
                 id: 'classified-intel',
-                name: 'CLASSIFIED INTEL',
-                description: 'Classified intelligence sharing and analysis',
+                name: '정보분석실',
+                description: '기밀 정보 공유 및 분석',
                 requiredClearance: 3
             },
             'mission-reports': {
                 id: 'mission-reports',
-                name: 'MISSION REPORTS',
-                description: 'Field mission reports and debriefings',
+                name: '임무보고서',
+                description: '현장 임무 보고서 및 브리핑',
                 requiredClearance: 2
             },
             'technical-support': {
                 id: 'technical-support',
-                name: 'TECHNICAL SUPPORT',
-                description: 'Technical issues and system support',
+                name: '장비토론',
+                description: '기술적 문제 및 시스템 지원',
                 requiredClearance: 1
             },
             'agent-training': {
                 id: 'agent-training',
-                name: 'AGENT TRAINING',
-                description: 'Training materials and skill development',
+                name: '에이전트 교육',
+                description: '교육 자료 및 기술 개발',
                 requiredClearance: 1
             },
             'classified-operations': {
                 id: 'classified-operations',
-                name: 'CLASSIFIED OPERATIONS',
-                description: 'Top secret operations and planning',
+                name: '기밀 작전',
+                description: '최고 기밀 작전 및 계획',
                 requiredClearance: 4
             }
         };
@@ -92,314 +94,94 @@ class ChannelPage {
         return channels[channelId] || channels['general-discussion'];
     }
 
-    // 스레드 목록 로드
+    // 스레드 목록 로드 (실시간 동기화)
     async loadThreads(channelId) {
-        // 실제로는 API에서 가져와야 함
-        const allThreads = {
-            'general-discussion': [
-            {
-                id: 'thread-1',
-                    title: '새로운 감시 장비 배치',
-                author: 'Agent_Alpha',
-                timestamp: new Date(Date.now() - 1800000),
-                votes: 15,
-                replies: 8,
-                isValidated: true,
-                    status: 'active',
-                    userVoted: false
-            },
-            {
-                id: 'thread-2',
-                    title: '현장 보고서: 작전 나이트폴',
-                author: 'Agent_Beta',
-                timestamp: new Date(Date.now() - 3600000),
-                votes: 23,
-                replies: 12,
-                isValidated: true,
-                    status: 'active',
-                    userVoted: false
-            },
-            {
-                id: 'thread-3',
-                    title: '시스템 유지보수 일정',
-                author: 'Agent_Gamma',
-                timestamp: new Date(Date.now() - 5400000),
-                votes: 7,
-                replies: 3,
-                isValidated: false,
-                    status: 'active',
-                    userVoted: false
-            },
-            {
-                id: 'thread-4',
-                    title: '인텔리전스 브리핑: 섹터 7',
-                author: 'Agent_Delta',
-                timestamp: new Date(Date.now() - 7200000),
-                votes: 31,
-                replies: 15,
-                isValidated: true,
-                    status: 'pinned',
-                    userVoted: false
-            },
-            {
-                id: 'thread-5',
-                    title: '교육 세션 피드백',
-                author: 'Agent_Echo',
-                timestamp: new Date(Date.now() - 9000000),
-                votes: 12,
-                replies: 6,
-                isValidated: false,
-                    status: 'active',
-                    userVoted: false
-                }
-            ],
-            'classified-intel': [
-                {
-                    id: 'intel-1',
-                    title: '고급 감시 기법 분석',
-                    author: 'Agent_Alpha',
-                    timestamp: new Date(Date.now() - 1200000),
-                    votes: 28,
-                    replies: 14,
-                    isValidated: true,
-                    status: 'active',
-                    userVoted: false
-                },
-                {
-                    id: 'intel-2',
-                    title: '데이터 암호화 표준 업데이트',
-                    author: 'Agent_Gamma',
-                    timestamp: new Date(Date.now() - 2400000),
-                    votes: 19,
-                    replies: 9,
-                    isValidated: true,
-                    status: 'active',
-                    userVoted: false
-                },
-                {
-                    id: 'intel-3',
-                    title: '보안 프로토콜 베타 검토',
-                    author: 'Agent_Delta',
-                    timestamp: new Date(Date.now() - 3600000),
-                    votes: 35,
-                    replies: 18,
-                    isValidated: true,
-                    status: 'pinned',
-                    userVoted: false
-                }
-            ],
-            'mission-reports': [
-                {
-                    id: 'mission-1',
-                    title: '현장 임무 보고서: 작전 나이트폴',
-                    author: 'Agent_Beta',
-                    timestamp: new Date(Date.now() - 1800000),
-                    votes: 42,
-                    replies: 22,
-                    isValidated: true,
-                    status: 'active',
-                    userVoted: false
-                },
-                {
-                    id: 'mission-2',
-                    title: '감시 프로토콜 알파 현장 테스트',
-                    author: 'Agent_Alpha',
-                    timestamp: new Date(Date.now() - 3000000),
-                    votes: 26,
-                    replies: 13,
-                    isValidated: true,
-                    status: 'active',
-                    userVoted: false
-                },
-                {
-                    id: 'mission-3',
-                    title: '인텔리전스 분석 가이드 적용 사례',
-                    author: 'Agent_Delta',
-                    timestamp: new Date(Date.now() - 4200000),
-                    votes: 31,
-                    replies: 16,
-                    isValidated: true,
-                    status: 'active',
-                    userVoted: false
-                }
-            ],
-            'technical-support': [
-                {
-                    id: 'tech-1',
-                    title: '시스템 유지보수 일정 관리',
-                    author: 'Agent_Gamma',
-                    timestamp: new Date(Date.now() - 1500000),
-                    votes: 8,
-                    replies: 4,
-                    isValidated: false,
-                    status: 'active',
-                    userVoted: false
-                },
-                {
-                    id: 'tech-2',
-                    title: '데이터 암호화 표준 구현',
-                    author: 'Agent_Echo',
-                    timestamp: new Date(Date.now() - 2700000),
-                    votes: 14,
-                    replies: 7,
-                    isValidated: false,
-                    status: 'active',
-                    userVoted: false
-                },
-                {
-                    id: 'tech-3',
-                    title: 'TAA 아카이브 운영 가이드',
-                    author: 'Agent_Alpha',
-                    timestamp: new Date(Date.now() - 3900000),
-                    votes: 11,
-                    replies: 5,
-                    isValidated: false,
-                    status: 'active',
-                    userVoted: false
-                }
-            ],
-            'agent-training': [
-                {
-                    id: 'training-1',
-                    title: '교육 세션 피드백 및 개선사항',
-                    author: 'Agent_Echo',
-                    timestamp: new Date(Date.now() - 2000000),
-                    votes: 18,
-                    replies: 9,
-                    isValidated: false,
-                    status: 'active',
-                    userVoted: false
-                },
-                {
-                    id: 'training-2',
-                    title: '에이전트 행동 강령 교육',
-                    author: 'Agent_Alpha',
-                    timestamp: new Date(Date.now() - 3200000),
-                    votes: 22,
-                    replies: 11,
-                    isValidated: false,
-                    status: 'active',
-                    userVoted: false
-                },
-                {
-                    id: 'training-3',
-                    title: '고급 감시 기법 매뉴얼 학습',
-                    author: 'Agent_Beta',
-                    timestamp: new Date(Date.now() - 4400000),
-                    votes: 16,
-                    replies: 8,
-                    isValidated: false,
-                    status: 'active',
-                    userVoted: false
-                }
-            ],
-            'classified-operations': [
-                {
-                    id: 'ops-1',
-                    title: '긴급 상황 대응 매뉴얼 검토',
-                    author: 'Agent_Gamma',
-                    timestamp: new Date(Date.now() - 1000000),
-                    votes: 45,
-                    replies: 23,
-                    isValidated: true,
-                    status: 'pinned',
-                    userVoted: false
-                },
-                {
-                    id: 'ops-2',
-                    title: '최고 기밀 작전 계획',
-                    author: 'Agent_Delta',
-                    timestamp: new Date(Date.now() - 2200000),
-                    votes: 38,
-                    replies: 19,
-                    isValidated: true,
-                    status: 'active',
-                    userVoted: false
-                },
-                {
-                    id: 'ops-3',
-                    title: '특수 임무 브리핑',
-                    author: 'Agent_Alpha',
-                    timestamp: new Date(Date.now() - 3400000),
-                    votes: 52,
-                    replies: 26,
-                    isValidated: true,
-                    status: 'active',
-                    userVoted: false
-                }
-            ]
-        };
+        try {
+            // 기존 리스너 해제
+            if (this.unsubscribeThreads) {
+                this.unsubscribeThreads();
+            }
 
-        this.threads = allThreads[channelId] || allThreads['general-discussion'];
+            // 실시간 리스너 설정
+            this.unsubscribeThreads = window.forumService.getChannelThreads(channelId, (threads) => {
+                this.threads = threads;
+                this.render();
+            });
+
+        } catch (error) {
+            console.error('ChannelPage: Error loading threads:', error);
+            this.showError('스레드 목록을 불러오는데 실패했습니다.');
+        }
     }
 
     // 이벤트 리스너 설정
     setupEventListeners() {
         // 새 스레드 생성 버튼
-        const createThreadBtn = document.getElementById('create-thread-btn');
-        if (createThreadBtn) {
-            createThreadBtn.addEventListener('click', () => {
+        this.container.addEventListener('click', (e) => {
+            if (e.target.id === 'create-thread-btn') {
                 this.createNewThread();
-            });
-        }
+            }
+        });
+
+        // 필터 및 정렬 이벤트
+        this.setupFilterEvents();
     }
 
-    // 채널 페이지 렌더링
+    // 렌더링
     render() {
-        if (!this.container || !this.currentChannel) return;
+        if (!this.currentChannel) return;
+
+        const filteredThreads = this.filterThreads();
+        const sortedThreads = this.sortThreads(filteredThreads);
+        const paginatedThreads = this.paginateThreads(sortedThreads);
 
         this.container.innerHTML = `
             <div class="channel-header">
                 <div class="channel-info">
-                    <h1># ${this.currentChannel.name}</h1>
+                    <h1>${this.currentChannel.name}</h1>
                     <p>${this.currentChannel.description}</p>
                 </div>
                 <div class="channel-actions">
-                    <button id="create-thread-btn" class="terminal-btn">CREATE NEW THREAD</button>
+                    <button id="create-thread-btn" class="terminal-btn">새 스레드 생성</button>
                 </div>
             </div>
-            
+
             <div class="threads-container">
                 <div class="threads-header">
-                    <h2>THREADS (${this.threads.length})</h2>
+                    <h2>스레드 목록 (${this.threads.length}개)</h2>
                     <div class="thread-filters">
-                        <select id="status-filter" class="terminal-input">
-                            <option value="all">All Status</option>
-                            <option value="active">Active</option>
-                            <option value="pinned">Pinned</option>
-                            <option value="locked">Locked</option>
+                        <select id="filter-select" class="terminal-input">
+                            <option value="all">전체</option>
+                            <option value="validated">검증된 정보</option>
+                            <option value="pinned">고정된 게시물</option>
                         </select>
-                        <select id="sort-filter" class="terminal-input">
-                            <option value="latest">Latest</option>
-                            <option value="votes">Most Voted</option>
-                            <option value="replies">Most Replies</option>
+                        <select id="sort-select" class="terminal-input">
+                            <option value="latest">최신순</option>
+                            <option value="votes">추천순</option>
+                            <option value="replies">댓글순</option>
                         </select>
                     </div>
                 </div>
-                
+
                 <div class="threads-table">
                     <table>
                         <thead>
                             <tr>
-                                <th class="status-col">Status</th>
-                                <th class="title-col">Title</th>
-                                <th class="agent-col">Agent</th>
-                                <th class="timestamp-col">Timestamp</th>
-                                <th class="votes-col">Votes</th>
-                                <th class="replies-col">Replies</th>
+                                <th class="status-col">상태</th>
+                                <th class="title-col">제목</th>
+                                <th class="agent-col">작성자</th>
+                                <th class="timestamp-col">작성일</th>
+                                <th class="votes-col">추천</th>
+                                <th class="replies-col">댓글</th>
                             </tr>
                         </thead>
-                        <tbody id="threads-tbody">
-                            ${this.threads.map(thread => this.createThreadRow(thread)).join('')}
+                        <tbody>
+                            ${paginatedThreads.map(thread => this.createThreadRow(thread)).join('')}
                         </tbody>
                     </table>
                 </div>
-                
-                <div class="threads-pagination">
-                    <button class="terminal-btn small" onclick="window.channelPage.previousPage()">Previous</button>
-                    <span class="page-info">Page ${this.currentPage}</span>
-                    <button class="terminal-btn small" onclick="window.channelPage.nextPage()">Next</button>
-                </div>
+
+                ${this.renderPagination()}
             </div>
         `;
 
@@ -410,41 +192,37 @@ class ChannelPage {
     // 스레드 행 생성
     createThreadRow(thread) {
         const statusIcon = this.getStatusIcon(thread.status);
-        const isValidated = thread.isValidated || thread.votes >= 10; // 10개 이상 추천시 Validated Intel
-        const isValidatedClass = isValidated ? 'validated' : '';
-        const formattedDate = this.formatDate(thread.timestamp);
-        const voteButtonClass = thread.userVoted ? 'voted' : '';
-        const voteIcon = thread.userVoted ? '▲' : '△';
+        const validatedClass = thread.isValidated ? 'validated-intel' : '';
+        const pinnedClass = thread.isPinned ? 'pinned' : '';
         
         return `
-            <tr class="thread-row ${isValidatedClass}" data-thread-id="${thread.id}">
+            <tr class="thread-row ${thread.isValidated ? 'validated' : ''}" data-thread-id="${thread.id}">
                 <td class="status-col">
                     <span class="status-icon">${statusIcon}</span>
-                    ${isValidated ? '<span class="validated-badge">✓</span>' : ''}
                 </td>
                 <td class="title-col">
-                    <a href="#" class="thread-title ${isValidated ? 'validated-intel' : ''}">${thread.title}</a>
+                    <a href="#" class="thread-title ${validatedClass} ${pinnedClass}">
+                        ${this.escapeHtml(thread.title)}
+                        ${thread.isValidated ? '<span class="validated-badge">✓</span>' : ''}
+                    </a>
                 </td>
                 <td class="agent-col">
-                    <span class="agent-name">${thread.author}</span>
+                    <span class="agent-name">${this.escapeHtml(thread.authorName)}</span>
                 </td>
                 <td class="timestamp-col">
-                    <span class="timestamp">${formattedDate}</span>
+                    <span class="timestamp">${this.formatDate(thread.createdAt)}</span>
                 </td>
                 <td class="votes-col">
-                    <button class="vote-btn ${voteButtonClass}" data-thread-id="${thread.id}" title="추천">
-                        <span class="vote-icon">${voteIcon}</span>
-                    <span class="vote-count">${thread.votes}</span>
-                    </button>
+                    <span class="vote-count">${thread.votes || 0}</span>
                 </td>
                 <td class="replies-col">
-                    <span class="reply-count">${thread.replies}</span>
+                    <span class="reply-count">${thread.replies || 0}</span>
                 </td>
             </tr>
         `;
     }
 
-    // 상태 아이콘 가져오기
+    // 상태 아이콘 반환
     getStatusIcon(status) {
         switch (status) {
             case 'pinned': return '📌';
@@ -456,81 +234,44 @@ class ChannelPage {
 
     // 스레드 클릭 이벤트 설정
     setupThreadClickEvents() {
-        const threadRows = this.container.querySelectorAll('.thread-row');
-        
-        threadRows.forEach(row => {
+        this.container.querySelectorAll('.thread-row').forEach(row => {
             row.addEventListener('click', (e) => {
-                // 추천 버튼 클릭시 스레드 이동 방지
-                if (e.target.closest('.vote-btn')) {
-                    e.stopPropagation();
-                    return;
-                }
-                
                 const threadId = row.dataset.threadId;
-                this.navigateToThread(threadId);
-            });
-        });
-
-        // 추천 버튼 클릭 이벤트
-        const voteButtons = this.container.querySelectorAll('.vote-btn');
-        voteButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const threadId = btn.dataset.threadId;
-                this.handleVote(threadId);
+                if (threadId) {
+                    this.navigateToThread(threadId);
+                }
             });
         });
     }
 
-    // 추천 처리
+    // 투표 처리
     async handleVote(threadId) {
-        const thread = this.threads.find(t => t.id === threadId);
-        if (!thread) return;
-
         try {
-            // 추천 상태 토글
-            thread.userVoted = !thread.userVoted;
-            
-            if (thread.userVoted) {
-                thread.votes++;
-            } else {
-                thread.votes--;
-            }
-
-            // Validated Intel 상태 업데이트
-            const wasValidated = thread.isValidated || thread.votes >= 10;
-            const isValidated = thread.isValidated || thread.votes >= 10;
-            
-            if (wasValidated !== isValidated) {
-                thread.isValidated = isValidated;
-            }
-
-            // UI 업데이트
-            this.render();
-            
-            // 실제로는 API 호출
-            console.log(`Vote ${thread.userVoted ? 'added' : 'removed'} for thread ${threadId}`);
-            
+            await window.forumService.voteThread(threadId, 'up');
+            terminalEffects.showSuccess('투표가 완료되었습니다.');
         } catch (error) {
-            console.error('Error handling vote:', error);
+            console.error('Error voting thread:', error);
+            terminalEffects.showError('투표 처리 중 오류가 발생했습니다.');
         }
     }
 
     // 필터 이벤트 설정
     setupFilterEvents() {
-        const statusFilter = document.getElementById('status-filter');
-        const sortFilter = document.getElementById('sort-filter');
-        
-        if (statusFilter) {
-            statusFilter.addEventListener('change', () => {
-                this.filterThreads();
+        const filterSelect = this.container.querySelector('#filter-select');
+        const sortSelect = this.container.querySelector('#sort-select');
+
+        if (filterSelect) {
+            filterSelect.addEventListener('change', (e) => {
+                this.filterType = e.target.value;
+                this.currentPage = 1;
+                this.render();
             });
         }
-        
-        if (sortFilter) {
-            sortFilter.addEventListener('change', () => {
-                this.sortThreads();
+
+        if (sortSelect) {
+            sortSelect.addEventListener('change', (e) => {
+                this.sortType = e.target.value;
+                this.render();
             });
         }
     }
@@ -539,141 +280,154 @@ class ChannelPage {
     navigateToThread(threadId) {
         if (window.router) {
             window.router.navigate(`/forums/${this.currentChannel.id}/thread/${threadId}`);
-        } else {
-            // 폴백: 직접 뷰 전환
-            if (window.taaApp) {
-                window.taaApp.showView('thread');
-                // 스레드 데이터 전달
-                window.currentThreadId = threadId;
-                window.currentChannelId = this.currentChannel.id;
-            }
         }
     }
 
     // 새 스레드 생성
     createNewThread() {
         if (window.router) {
-            window.router.navigate(`/forums/${this.currentChannel.id}/create`);
-        } else {
-            // 폴백: 직접 뷰 전환
-            if (window.taaApp) {
-                window.taaApp.showView('create-thread');
-                window.currentChannelId = this.currentChannel.id;
-            }
+            window.router.navigate(`/forums/${this.currentChannel.id}/create-thread`);
         }
     }
 
     // 스레드 필터링
     filterThreads() {
-        const statusFilter = document.getElementById('status-filter');
-        const filterValue = statusFilter ? statusFilter.value : 'all';
-        
-        const filteredThreads = this.threads.filter(thread => {
-            if (filterValue === 'all') return true;
-            return thread.status === filterValue;
-        });
-        
-        this.renderFilteredThreads(filteredThreads);
+        let filtered = this.threads;
+
+        switch (this.filterType) {
+            case 'validated':
+                filtered = filtered.filter(thread => thread.isValidated);
+                break;
+            case 'pinned':
+                filtered = filtered.filter(thread => thread.isPinned);
+                break;
+            default:
+                break;
+        }
+
+        return filtered;
     }
 
     // 스레드 정렬
-    sortThreads() {
-        const sortFilter = document.getElementById('sort-filter');
-        const sortValue = sortFilter ? sortFilter.value : 'latest';
-        
-        const sortedThreads = [...this.threads].sort((a, b) => {
-            switch (sortValue) {
-                case 'votes':
-                    return b.votes - a.votes;
-                case 'replies':
-                    return b.replies - a.replies;
-                case 'latest':
-                default:
-                    return b.timestamp - a.timestamp;
-            }
-        });
-        
-        this.renderFilteredThreads(sortedThreads);
+    sortThreads(threads) {
+        switch (this.sortType) {
+            case 'votes':
+                return threads.sort((a, b) => (b.votes || 0) - (a.votes || 0));
+            case 'replies':
+                return threads.sort((a, b) => (b.replies || 0) - (a.replies || 0));
+            case 'latest':
+            default:
+                return threads.sort((a, b) => {
+                    const dateA = a.createdAt?.toDate?.() || new Date(a.createdAt);
+                    const dateB = b.createdAt?.toDate?.() || new Date(b.createdAt);
+                    return dateB - dateA;
+                });
+        }
     }
 
-    // 필터링된 스레드 렌더링
-    renderFilteredThreads(threads) {
-        const tbody = document.getElementById('threads-tbody');
-        if (tbody) {
-            tbody.innerHTML = threads.map(thread => this.createThreadRow(thread)).join('');
-            this.setupThreadClickEvents();
-        }
+    // 페이지네이션된 스레드 반환
+    paginateThreads(threads) {
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        return threads.slice(startIndex, endIndex);
+    }
+
+    // 페이지네이션 렌더링
+    renderPagination() {
+        const totalPages = Math.ceil(this.threads.length / this.itemsPerPage);
+        
+        if (totalPages <= 1) return '';
+
+        return `
+            <div class="threads-pagination">
+                <button class="terminal-btn" onclick="channelPage.previousPage()" ${this.currentPage <= 1 ? 'disabled' : ''}>
+                    이전
+                </button>
+                <span class="page-info">${this.currentPage} / ${totalPages}</span>
+                <button class="terminal-btn" onclick="channelPage.nextPage()" ${this.currentPage >= totalPages ? 'disabled' : ''}>
+                    다음
+                </button>
+            </div>
+        `;
     }
 
     // 이전 페이지
     previousPage() {
         if (this.currentPage > 1) {
             this.currentPage--;
-            this.loadThreads(this.currentChannel.id);
+            this.render();
         }
     }
 
     // 다음 페이지
     nextPage() {
-        this.currentPage++;
-        this.loadThreads(this.currentChannel.id);
+        const totalPages = Math.ceil(this.threads.length / this.itemsPerPage);
+        if (this.currentPage < totalPages) {
+            this.currentPage++;
+            this.render();
+        }
     }
 
     // 날짜 포맷팅
     formatDate(date) {
-        const now = new Date();
-        const diff = now - date;
+        if (!date) return '알 수 없음';
         
-        if (diff < 60000) return 'Just now';
-        if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
-        if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
-        return date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        const dateObj = date.toDate ? date.toDate() : new Date(date);
+        const now = new Date();
+        const diffMs = now - dateObj;
+        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+        const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+        if (diffMinutes < 1) return '방금 전';
+        if (diffMinutes < 60) return `${diffMinutes}분 전`;
+        if (diffHours < 24) return `${diffHours}시간 전`;
+        
+        return dateObj.toLocaleDateString('ko-KR');
     }
 
-    // 로딩 상태 표시
+    // HTML 이스케이프
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // 로딩 표시
     showLoading() {
         if (this.container) {
             this.container.innerHTML = `
                 <div class="loading-container">
                     <div class="loading-spinner"></div>
-                    <span>Loading channel...</span>
+                    <p>채널 정보를 불러오는 중...</p>
                 </div>
             `;
         }
     }
 
-    // 로딩 상태 숨기기
+    // 로딩 숨기기
     hideLoading() {
-        const loadingContainer = this.container.querySelector('.loading-container');
-        if (loadingContainer) {
-            loadingContainer.remove();
-        }
+        // 로딩 상태는 render()에서 자동으로 처리됨
     }
 
-    // 에러 상태 표시
+    // 에러 표시
     showError(message) {
         if (this.container) {
             this.container.innerHTML = `
                 <div class="error-state">
                     <div class="error-icon">⚠️</div>
-                    <h3>Error</h3>
+                    <h3>오류 발생</h3>
                     <p>${message}</p>
-                    <button class="terminal-btn" onclick="window.channelPage.loadChannel('${this.currentChannel?.id}')">
-                        Retry
-                    </button>
                 </div>
             `;
         }
     }
 
-    // 컴포넌트 정리
+    // 정리
     cleanup() {
-        // 이벤트 리스너 정리
+        if (this.unsubscribeThreads) {
+            this.unsubscribeThreads();
+            this.unsubscribeThreads = null;
+        }
     }
 }
 

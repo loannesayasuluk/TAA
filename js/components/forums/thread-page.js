@@ -10,6 +10,7 @@ class ThreadPage {
         this.comments = [];
         this.isLoading = false;
         this.userVote = null; // 'up', 'down', null
+        this.unsubscribeComments = null; // 실시간 리스너 해제용
         
         this.init();
     }
@@ -156,10 +157,25 @@ This operation serves as a model for future night missions.`,
         return threads[threadId] || threads['thread-1'];
     }
 
-    // 댓글 목록 로드
+    // 댓글 목록 로드 (실시간 동기화)
     async loadComments(threadId) {
-        // 실제로는 API에서 가져와야 함
-        const allComments = {
+        try {
+            // 기존 리스너 해제
+            if (this.unsubscribeComments) {
+                this.unsubscribeComments();
+            }
+
+            // 실시간 리스너 설정
+            this.unsubscribeComments = window.forumService.getThreadComments(threadId, (comments) => {
+                this.comments = comments;
+                this.renderComments();
+            });
+
+        } catch (error) {
+            console.error('ThreadPage: Error loading comments:', error);
+            this.showError('댓글을 불러오는데 실패했습니다.');
+        }
+    }
             'thread-1': [
             {
                 id: 'comment-1',
@@ -585,27 +601,11 @@ This operation serves as a model for future night missions.`,
         }
 
         try {
-            // 새 댓글 생성
-            const newComment = {
-                id: `comment-${Date.now()}`,
-                content: content,
-                author: this.getCurrentUser().displayName || this.getCurrentUser().email,
-                timestamp: new Date(),
-                votes: 0,
-                isAgentComment: true
-            };
-
-            // 댓글 목록에 추가
-            this.comments.unshift(newComment);
-
-            // UI 업데이트
-            this.render();
+            // Firestore에 댓글 저장
+            await window.forumService.createComment(this.currentThread.id, content);
 
             // 입력 필드 초기화
             commentInput.value = '';
-
-            // 서버에 댓글 전송
-            await this.sendCommentToServer(newComment);
 
             if (window.terminalEffects) {
                 terminalEffects.showSuccess('댓글이 성공적으로 등록되었습니다.');
@@ -713,7 +713,10 @@ This operation serves as a model for future night missions.`,
 
     // 컴포넌트 정리
     cleanup() {
-        // 이벤트 리스너 정리
+        if (this.unsubscribeComments) {
+            this.unsubscribeComments();
+            this.unsubscribeComments = null;
+        }
     }
 }
 
