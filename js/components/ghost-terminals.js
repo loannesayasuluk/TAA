@@ -5,29 +5,25 @@ class GhostTerminals {
     constructor() {
         this.terminals = [];
         this.isActive = false;
-        this.terminalMessages = [
-            "QUERYING: Case File #M-250712...",
-            "ACCESSING: Classified Document #X-1989",
-            "ANALYZING: Evidence Package #E-4421",
-            "UPLOADING: Field Report #R-7734",
-            "DOWNLOADING: Intelligence Brief #I-9912",
-            "SCANNING: Security Log #S-5567",
-            "PROCESSING: Audio Recording #A-3344",
-            "DECRYPTING: Encrypted Message #C-7788",
-            "VALIDATING: Source Credibility #V-1122",
-            "SYNCHRONIZING: Database Records #D-6655",
-            "MONITORING: Communication Channel #M-8899",
-            "EXTRACTING: Metadata from File #F-2233",
-            "CROSS-REFERENCING: Case Files #X-4455",
-            "UPDATING: Agent Status #U-6677",
-            "ARCHIVING: Completed Mission #A-8899",
-            "INITIATING: Background Check #B-1122",
-            "COMPILING: Intelligence Report #I-3344",
-            "VERIFYING: Witness Statement #W-5566",
-            "PROCESSING: Surveillance Data #S-7788",
-            "ANALYZING: Pattern Recognition #P-9900"
+        this.activityFeed = [
+            'Agent-007이 File #F-2259를 열람했습니다',
+            'Agent-Smith가 #정보분석실에 새 글을 작성했습니다',
+            'Agent-Johnson이 Surveillance Protocol을 업데이트했습니다',
+            'Agent-Williams가 #기밀정보 채널에 접근했습니다',
+            'Agent-Brown이 Field Report #R-4421을 제출했습니다',
+            'Agent-Davis가 #임무보고서에 댓글을 남겼습니다',
+            'Agent-Miller가 Intelligence Brief를 다운로드했습니다',
+            'Agent-Wilson이 #기술지원에 질문을 올렸습니다',
+            'Agent-Moore가 Evidence Package를 분석했습니다',
+            'Agent-Taylor가 #에이전트교육 자료를 업로드했습니다',
+            'Agent-Anderson이 Security Log를 검토했습니다',
+            'Agent-Thomas가 #자유게시판에 토론을 시작했습니다',
+            'Agent-Jackson이 Audio Recording을 처리했습니다',
+            'Agent-White가 #기밀작전 채널에 참여했습니다',
+            'Agent-Harris가 Database Records를 동기화했습니다'
         ];
-        this.currentTerminalIndex = 0;
+        this.currentActivityIndex = 0;
+        this.activityInterval = null;
         this.initGhostTerminals();
     }
 
@@ -71,16 +67,61 @@ class GhostTerminals {
         return terminal;
     }
 
-    // 랜덤 메시지 가져오기
+    // 실시간 활동 메시지 가져오기
+    getActivityMessage() {
+        const message = this.activityFeed[this.currentActivityIndex];
+        this.currentActivityIndex = (this.currentActivityIndex + 1) % this.activityFeed.length;
+        return message;
+    }
+
+    // 랜덤 메시지 가져오기 (기존 호환성)
     getRandomMessage() {
-        const randomIndex = Math.floor(Math.random() * this.terminalMessages.length);
-        return this.terminalMessages[randomIndex];
+        return this.getActivityMessage();
     }
 
     // 애니메이션 시작
     startAnimation() {
         this.isActive = true;
+        this.startActivityFeed();
         this.animateTerminals();
+    }
+
+    // 실시간 활동 피드 시작
+    startActivityFeed() {
+        if (this.activityInterval) {
+            clearInterval(this.activityInterval);
+        }
+        
+        // 3-5초마다 새로운 활동 메시지 추가
+        this.activityInterval = setInterval(() => {
+            if (this.isActive) {
+                this.addNewActivity();
+            }
+        }, 3000 + Math.random() * 2000);
+    }
+
+    // 새로운 활동 추가
+    addNewActivity() {
+        const newActivity = this.getActivityMessage();
+        
+        // 활동 피드에 새 메시지 추가 (실제로는 API에서 가져옴)
+        this.activityFeed.push(newActivity);
+        
+        // 최대 20개까지만 유지
+        if (this.activityFeed.length > 20) {
+            this.activityFeed.shift();
+        }
+        
+        // 터미널 업데이트
+        this.updateRandomTerminal(newActivity);
+    }
+
+    // 랜덤 터미널 업데이트
+    updateRandomTerminal(message) {
+        if (this.terminals.length === 0) return;
+        
+        const randomTerminal = this.terminals[Math.floor(Math.random() * this.terminals.length)];
+        this.updateTerminalMessage(randomTerminal, message);
     }
 
     // 터미널 애니메이션
@@ -102,7 +143,7 @@ class GhostTerminals {
     }
 
     // 터미널 메시지 업데이트
-    updateTerminalMessage(terminal) {
+    updateTerminalMessage(terminal, customMessage = null) {
         const textElement = terminal.querySelector('.ghost-text');
         if (!textElement) return;
 
@@ -111,7 +152,8 @@ class GhostTerminals {
         
         setTimeout(() => {
             // 새 메시지 설정
-            textElement.textContent = this.getRandomMessage();
+            const message = customMessage || this.getRandomMessage();
+            textElement.textContent = message;
             
             // 페이드 인
             terminal.style.opacity = '1';
@@ -312,6 +354,10 @@ class GhostTerminals {
     // 애니메이션 중지
     stopAnimation() {
         this.isActive = false;
+        if (this.activityInterval) {
+            clearInterval(this.activityInterval);
+            this.activityInterval = null;
+        }
         this.terminals.forEach(terminal => {
             terminal.style.animation = 'none';
         });

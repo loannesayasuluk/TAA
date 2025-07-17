@@ -413,6 +413,9 @@ class TAAApp {
         if (dateElement) dateElement.textContent = `Updated: ${this.formatDate(file.updatedAt)}`;
         if (clearanceElement) clearanceElement.textContent = `Clearance: ${file.requiredClearance || 1}`;
         
+        // 파일 수정 버튼 추가
+        this.addEditButton();
+        
         // 파일 내용 파싱 및 표시
         this.parseAndDisplayFileContent(file.content);
         
@@ -423,6 +426,25 @@ class TAAApp {
         
         // 파일 보기 화면으로 전환
         this.showView('file');
+    }
+
+    // 파일 수정 버튼 추가
+    addEditButton() {
+        const fileBody = document.getElementById('file-body');
+        if (!fileBody) return;
+        
+        // 기존 수정 버튼 제거
+        const existingBtn = fileBody.querySelector('.edit-file-btn');
+        if (existingBtn) existingBtn.remove();
+        
+        // 수정 버튼 생성
+        const editButton = document.createElement('button');
+        editButton.className = 'edit-file-btn terminal-btn';
+        editButton.textContent = '파일 수정 (Amend File)';
+        editButton.onclick = () => this.editFile();
+        
+        // 파일 제목 아래에 버튼 삽입
+        fileBody.insertBefore(editButton, fileBody.firstChild);
     }
 
     // 파일 내용 파싱 및 표시
@@ -437,10 +459,29 @@ class TAAApp {
         const headings = wikiParser.extractHeadings(content);
         html = wikiParser.addHeadingIds(html, headings);
         
+        // 내부 링크 파싱
+        html = this.parseInternalLinks(html);
+        
         fileBody.innerHTML = html;
         
         // 위키 링크 이벤트 추가
         this.setupWikiLinkEvents(fileBody);
+    }
+
+    // 내부 링크 파싱
+    parseInternalLinks(html) {
+        // [[파일 제목]] 패턴을 찾아서 링크로 변환
+        return html.replace(/\[\[(.*?)\]\]/g, (match, pageName) => {
+            const linkText = pageName.trim();
+            const linkId = this.generateFileId(linkText);
+            
+            return `<a href="#" class="internal-link" data-page="${linkId}" data-page-name="${linkText}">${linkText}</a>`;
+        });
+    }
+
+    // 파일 ID 생성
+    generateFileId(pageName) {
+        return pageName.toLowerCase().replace(/[^a-z0-9가-힣]/g, '-').replace(/-+/g, '-');
     }
 
     // 목차 생성
@@ -460,6 +501,39 @@ class TAAApp {
         links.forEach(link => {
             terminalEffects.addLinkHoverEffect(link);
         });
+
+        // 내부 링크 이벤트 설정
+        const internalLinks = container.querySelectorAll('.internal-link');
+        internalLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageName = link.dataset.pageName;
+                const pageId = link.dataset.page;
+                this.handleInternalLink(pageName, pageId);
+            });
+            
+            // 호버 효과 추가
+            terminalEffects.addLinkHoverEffect(link);
+        });
+    }
+
+    // 내부 링크 처리
+    async handleInternalLink(pageName, pageId) {
+        try {
+            // 먼저 해당 파일이 존재하는지 확인
+            const file = await fileService.getFileById(pageId);
+            if (file) {
+                // 파일이 존재하면 로드
+                await this.loadFile(file.id);
+            } else {
+                // 파일이 존재하지 않으면 새 페이지 생성 제안
+                this.showCreatePageSuggestion(pageName);
+            }
+        } catch (error) {
+            console.error('Error handling internal link:', error);
+            // 파일이 존재하지 않는 경우 새 페이지 생성 제안
+            this.showCreatePageSuggestion(pageName);
+        }
     }
 
     // 파일 편집
@@ -555,11 +629,16 @@ class TAAApp {
         }
         
         try {
-            const results = await fileService.searchFiles(query);
-            this.displaySearchResults(results, query);
+            // 검색 결과 페이지로 이동
+            if (window.router) {
+                window.router.navigate(`/search?q=${encodeURIComponent(query)}`);
+            } else {
+                const results = await fileService.searchFiles(query);
+                this.displaySearchResults(results, query);
+            }
         } catch (error) {
             console.error('Error performing search:', error);
-            terminalEffects.showError('Search failed');
+            terminalEffects.showError('검색에 실패했습니다');
         }
     }
 

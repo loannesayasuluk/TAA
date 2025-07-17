@@ -383,6 +383,17 @@
     color: #FFD700;
 }
 
+.thread-title.validated-intel {
+    color: #FFD700;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+.thread-title.validated-intel:hover {
+    color: #FFFF00;
+    text-shadow: 0 0 8px rgba(255, 255, 0, 0.7);
+}
+
 .status-col {
     width: 80px;
     text-align: center;
@@ -427,6 +438,41 @@
 
 .vote-count, .reply-count {
     color: #FFBF00;
+    font-weight: bold;
+}
+
+.vote-btn {
+    background: transparent;
+    border: 1px solid #FFBF00;
+    color: #FFBF00;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+}
+
+.vote-btn:hover {
+    background: rgba(255, 191, 0, 0.1);
+    border-color: #FFD700;
+}
+
+.vote-btn.voted {
+    background: #FFBF00;
+    color: #000033;
+}
+
+.vote-btn.voted:hover {
+    background: #FFD700;
+    color: #000033;
+}
+
+.vote-icon {
+    font-size: 14px;
     font-weight: bold;
 }
 

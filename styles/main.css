@@ -1502,6 +1502,242 @@ body::after {
     padding: 0;
 }
 
+/* 파일 수정 버튼 */
+.edit-file-btn {
+    margin: 15px 0;
+    padding: 10px 20px;
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    color: #FFBF00;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 5px;
+}
+
+.edit-file-btn:hover {
+    background: rgba(255, 191, 0, 0.1);
+    border-color: #FFD700;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(255, 191, 0, 0.2);
+}
+
+/* 내부 링크 스타일 */
+.internal-link {
+    color: #FFBF00;
+    text-decoration: none;
+    border-bottom: 1px solid #FFBF00;
+    transition: all 0.3s ease;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.internal-link:hover {
+    color: #FFD700;
+    border-bottom-color: #FFD700;
+    background: rgba(255, 191, 0, 0.1);
+    text-shadow: 0 0 5px rgba(255, 191, 0, 0.5);
+}
+
+.internal-link:active {
+    transform: scale(0.98);
+}
+
+/* 검색 결과 페이지 */
+.search-header {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.search-header h1 {
+    color: #FFBF00;
+    margin: 0 0 10px 0;
+    font-size: 24px;
+}
+
+.search-header p {
+    color: #CCCCCC;
+    margin: 0;
+    font-size: 14px;
+}
+
+.search-content {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 20px;
+}
+
+.search-filters {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-radius: 5px;
+    padding: 20px;
+    height: fit-content;
+}
+
+.search-filters h3 {
+    color: #FFBF00;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.filter-group {
+    margin-bottom: 15px;
+}
+
+.filter-group label {
+    display: block;
+    color: #CCCCCC;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.filter-group .terminal-input {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.filter-actions .terminal-btn {
+    flex: 1;
+    font-size: 12px;
+    padding: 8px 12px;
+}
+
+.search-results {
+    background: linear-gradient(145deg, #000033, #191970);
+    border: 1px solid #FFBF00;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.search-result-item {
+    background: rgba(255, 191, 0, 0.05);
+    border: 1px solid #333333;
+    border-radius: 5px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.search-result-item:hover {
+    border-color: #FFBF00;
+    background: rgba(255, 191, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.result-type {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.type-icon {
+    font-size: 16px;
+}
+
+.type-label {
+    color: #FFBF00;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.result-score {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.score-label {
+    color: #999999;
+    font-size: 12px;
+}
+
+.score-value {
+    color: #FFD700;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.result-content {
+    margin-bottom: 10px;
+}
+
+.result-title {
+    color: #FFBF00;
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.result-preview {
+    color: #CCCCCC;
+    font-size: 14px;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.result-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 12px;
+    color: #999999;
+}
+
+.result-author {
+    color: #FFBF00;
+    font-weight: bold;
+}
+
+.no-results {
+    text-align: center;
+    padding: 40px;
+    color: #CCCCCC;
+}
+
+.no-results h3 {
+    color: #FFBF00;
+    margin-bottom: 10px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .search-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-actions {
+        flex-direction: column;
+    }
+    
+    .result-meta {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
 /* 댓글 섹션 */
 .comments-section {
     margin-top: 40px;

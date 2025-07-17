@@ -104,7 +104,8 @@ class ChannelPage {
                 votes: 15,
                 replies: 8,
                 isValidated: true,
-                status: 'active'
+                status: 'active',
+                userVoted: false
             },
             {
                 id: 'thread-2',
@@ -114,7 +115,8 @@ class ChannelPage {
                 votes: 23,
                 replies: 12,
                 isValidated: true,
-                status: 'active'
+                status: 'active',
+                userVoted: false
             },
             {
                 id: 'thread-3',
@@ -124,7 +126,8 @@ class ChannelPage {
                 votes: 7,
                 replies: 3,
                 isValidated: false,
-                status: 'active'
+                status: 'active',
+                userVoted: false
             },
             {
                 id: 'thread-4',
@@ -134,7 +137,8 @@ class ChannelPage {
                 votes: 31,
                 replies: 15,
                 isValidated: true,
-                status: 'pinned'
+                status: 'pinned',
+                userVoted: false
             },
             {
                 id: 'thread-5',
@@ -144,7 +148,8 @@ class ChannelPage {
                 votes: 12,
                 replies: 6,
                 isValidated: false,
-                status: 'active'
+                status: 'active',
+                userVoted: false
             }
         ];
     }
@@ -226,17 +231,20 @@ class ChannelPage {
     // 스레드 행 생성
     createThreadRow(thread) {
         const statusIcon = this.getStatusIcon(thread.status);
-        const isValidatedClass = thread.isValidated ? 'validated' : '';
+        const isValidated = thread.isValidated || thread.votes >= 10; // 10개 이상 추천시 Validated Intel
+        const isValidatedClass = isValidated ? 'validated' : '';
         const formattedDate = this.formatDate(thread.timestamp);
+        const voteButtonClass = thread.userVoted ? 'voted' : '';
+        const voteIcon = thread.userVoted ? '▲' : '△';
         
         return `
             <tr class="thread-row ${isValidatedClass}" data-thread-id="${thread.id}">
                 <td class="status-col">
                     <span class="status-icon">${statusIcon}</span>
-                    ${thread.isValidated ? '<span class="validated-badge">✓</span>' : ''}
+                    ${isValidated ? '<span class="validated-badge">✓</span>' : ''}
                 </td>
                 <td class="title-col">
-                    <a href="#" class="thread-title">${thread.title}</a>
+                    <a href="#" class="thread-title ${isValidated ? 'validated-intel' : ''}">${thread.title}</a>
                 </td>
                 <td class="agent-col">
                     <span class="agent-name">${thread.author}</span>
@@ -245,7 +253,10 @@ class ChannelPage {
                     <span class="timestamp">${formattedDate}</span>
                 </td>
                 <td class="votes-col">
-                    <span class="vote-count">${thread.votes}</span>
+                    <button class="vote-btn ${voteButtonClass}" data-thread-id="${thread.id}" title="추천">
+                        <span class="vote-icon">${voteIcon}</span>
+                        <span class="vote-count">${thread.votes}</span>
+                    </button>
                 </td>
                 <td class="replies-col">
                     <span class="reply-count">${thread.replies}</span>
@@ -270,10 +281,61 @@ class ChannelPage {
         
         threadRows.forEach(row => {
             row.addEventListener('click', (e) => {
+                // 추천 버튼 클릭시 스레드 이동 방지
+                if (e.target.closest('.vote-btn')) {
+                    e.stopPropagation();
+                    return;
+                }
+                
                 const threadId = row.dataset.threadId;
                 this.navigateToThread(threadId);
             });
         });
+
+        // 추천 버튼 클릭 이벤트
+        const voteButtons = this.container.querySelectorAll('.vote-btn');
+        voteButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const threadId = btn.dataset.threadId;
+                this.handleVote(threadId);
+            });
+        });
+    }
+
+    // 추천 처리
+    async handleVote(threadId) {
+        const thread = this.threads.find(t => t.id === threadId);
+        if (!thread) return;
+
+        try {
+            // 추천 상태 토글
+            thread.userVoted = !thread.userVoted;
+            
+            if (thread.userVoted) {
+                thread.votes++;
+            } else {
+                thread.votes--;
+            }
+
+            // Validated Intel 상태 업데이트
+            const wasValidated = thread.isValidated || thread.votes >= 10;
+            const isValidated = thread.isValidated || thread.votes >= 10;
+            
+            if (wasValidated !== isValidated) {
+                thread.isValidated = isValidated;
+            }
+
+            // UI 업데이트
+            this.render();
+            
+            // 실제로는 API 호출
+            console.log(`Vote ${thread.userVoted ? 'added' : 'removed'} for thread ${threadId}`);
+            
+        } catch (error) {
+            console.error('Error handling vote:', error);
+        }
     }
 
     // 필터 이벤트 설정
