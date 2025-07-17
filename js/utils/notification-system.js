@@ -20,6 +20,18 @@ class NotificationSystem {
             return null;
         }
         
+        // 중복 알림 방지 (같은 메시지가 3초 내에 있으면 무시)
+        const now = Date.now();
+        const recentNotification = this.notifications.find(n => 
+            n.message === message && 
+            n.type === type && 
+            (now - n.timestamp.getTime()) < 3000
+        );
+        
+        if (recentNotification) {
+            return recentNotification.id;
+        }
+        
         const notification = {
             id: Date.now() + Math.random(),
             message: message,
@@ -111,32 +123,71 @@ function showNotification(message, type = 'info', duration = 5000) {
 }
 
 // 전역 에러 핸들러
+let lastErrorTime = 0;
+const ERROR_COOLDOWN = 3000; // 3초 쿨다운
+
 window.addEventListener('error', (event) => {
     console.error('Global error:', event.error);
     
-    // 사용자에게 친화적인 에러 메시지 표시
-    let errorMessage = '시스템 오류가 발생했습니다.';
+    // 중복 에러 방지 (3초 내 같은 에러는 무시)
+    const now = Date.now();
+    if (now - lastErrorTime < ERROR_COOLDOWN) {
+        return;
+    }
+    lastErrorTime = now;
     
+    // 무시할 에러들 (일반적인 개발 중 에러들)
     if (event.error && event.error.message) {
-        if (event.error.message.includes('network')) {
-            errorMessage = '네트워크 연결을 확인해주세요.';
-        } else if (event.error.message.includes('firebase')) {
-            errorMessage = '데이터베이스 연결에 문제가 있습니다.';
-        } else if (event.error.message.includes('auth')) {
-            errorMessage = '인증에 문제가 있습니다. 다시 로그인해주세요.';
+        const errorMsg = event.error.message.toLowerCase();
+        
+        // 개발 중 발생하는 일반적인 에러들은 무시
+        if (errorMsg.includes('script error') ||
+            errorMsg.includes('syntax error') ||
+            errorMsg.includes('unexpected token') ||
+            errorMsg.includes('cannot read property') ||
+            errorMsg.includes('is not defined') ||
+            errorMsg.includes('is not a function')) {
+            return;
         }
     }
     
-    showNotification(errorMessage, 'error');
+    // 실제 중요한 에러만 사용자에게 표시
+    let errorMessage = null;
+    
+    if (event.error && event.error.message) {
+        const errorMsg = event.error.message.toLowerCase();
+        
+        if (errorMsg.includes('network') || errorMsg.includes('fetch')) {
+            errorMessage = '네트워크 연결을 확인해주세요.';
+        } else if (errorMsg.includes('firebase') || errorMsg.includes('database')) {
+            errorMessage = '데이터베이스 연결에 문제가 있습니다.';
+        } else if (errorMsg.includes('auth') || errorMsg.includes('authentication')) {
+            errorMessage = '인증에 문제가 있습니다. 다시 로그인해주세요.';
+        } else if (errorMsg.includes('permission') || errorMsg.includes('access')) {
+            errorMessage = '접근 권한이 없습니다.';
+        }
+    }
+    
+    // 중요한 에러만 표시
+    if (errorMessage) {
+        showNotification(errorMessage, 'error');
+    }
 });
 
-// 네트워크 상태 모니터링
+// 네트워크 상태 모니터링 (중복 방지)
+let lastNetworkStatus = navigator.onLine;
 window.addEventListener('online', () => {
-    showNotification('인터넷 연결이 복구되었습니다.', 'success');
+    if (!lastNetworkStatus) {
+        showNotification('인터넷 연결이 복구되었습니다.', 'success');
+        lastNetworkStatus = true;
+    }
 });
 
 window.addEventListener('offline', () => {
-    showNotification('인터넷 연결이 끊어졌습니다.', 'warning');
+    if (lastNetworkStatus) {
+        showNotification('인터넷 연결이 끊어졌습니다.', 'warning');
+        lastNetworkStatus = false;
+    }
 });
 
 // 재시도 로직을 위한 유틸리티 함수
