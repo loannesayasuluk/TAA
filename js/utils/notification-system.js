@@ -146,7 +146,10 @@ window.addEventListener('error', (event) => {
             errorMsg.includes('unexpected token') ||
             errorMsg.includes('cannot read property') ||
             errorMsg.includes('is not defined') ||
-            errorMsg.includes('is not a function')) {
+            errorMsg.includes('is not a function') ||
+            errorMsg.includes('firebase') ||  // Firebase 관련 에러는 개발 중 무시
+            errorMsg.includes('auth') ||      // Auth 관련 에러는 개발 중 무시
+            errorMsg.includes('database')) {  // Database 관련 에러는 개발 중 무시
             return;
         }
     }
@@ -159,10 +162,6 @@ window.addEventListener('error', (event) => {
         
         if (errorMsg.includes('network') || errorMsg.includes('fetch')) {
             errorMessage = '네트워크 연결을 확인해주세요.';
-        } else if (errorMsg.includes('firebase') || errorMsg.includes('database')) {
-            errorMessage = '데이터베이스 연결에 문제가 있습니다.';
-        } else if (errorMsg.includes('auth') || errorMsg.includes('authentication')) {
-            errorMessage = '인증에 문제가 있습니다. 다시 로그인해주세요.';
         } else if (errorMsg.includes('permission') || errorMsg.includes('access')) {
             errorMessage = '접근 권한이 없습니다.';
         }
