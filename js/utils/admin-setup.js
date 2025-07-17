@@ -160,6 +160,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     }, 2000);
 });
 
+// Firebase 의존성 체크 및 초기화
+function initializeAdminSetup() {
+    // Firebase가 완전히 로드될 때까지 대기
+    const checkFirebase = () => {
+        if (typeof firebase !== 'undefined' && 
+            firebase.auth && 
+            firebase.firestore && 
+            typeof auth !== 'undefined' && 
+            typeof db !== 'undefined') {
+            
+            console.log('Firebase dependencies loaded, initializing admin setup...');
+            setupAdminAccount();
+        } else {
+            console.log('Waiting for Firebase dependencies...');
+            setTimeout(checkFirebase, 100);
+        }
+    };
+    
+    checkFirebase();
+}
+
 console.log('TAA Archives: Admin setup utility initialized');
 console.log('Available commands:');
 console.log('- createAdminAccount() : 관리자 계정 생성');

@@ -1147,37 +1147,30 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn('Missing components:', missingComponents);
         // 1초 후 다시 시도
         setTimeout(() => {
-            if (window.initializeBootSequence) {
+            if (window.bootSequence) {
                 console.log('Retrying boot sequence initialization...');
-                initializeBootSequence();
+                window.bootSequence.start();
             } else {
-                console.error('initializeBootSequence function still not found');
-                // 강제로 부팅 시퀀스 시작
-                if (window.bootSequence) {
-                    console.log('Forcing boot sequence start...');
-                    bootSequence.start();
-                }
+                console.error('Boot sequence still not available');
             }
         }, 1000);
     } else {
         console.log('All components loaded, starting boot sequence...');
-        if (window.initializeBootSequence) {
-            initializeBootSequence();
+        if (window.bootSequence) {
+            window.bootSequence.start();
         } else {
-            console.error('initializeBootSequence function not found');
-            // 강제로 부팅 시퀀스 시작
-            if (window.bootSequence) {
-                console.log('Forcing boot sequence start...');
-                bootSequence.start();
-            }
+            console.error('Boot sequence not available');
         }
     }
 });
 
 // 모든 스크립트 로드 완료 후 부팅 시퀀스 초기화 (백업)
-if (window.initializeBootSequence) {
-    console.log('Initializing boot sequence from app.js');
-    initializeBootSequence();
-} else {
-    console.error('initializeBootSequence function not found');
-} 
+window.addEventListener('load', () => {
+    console.log('All resources loaded, checking boot sequence...');
+    setTimeout(() => {
+        if (window.bootSequence && !window.bootSequence.isRunning) {
+            console.log('Starting boot sequence from app.js');
+            window.bootSequence.start();
+        }
+    }, 500);
+}); 

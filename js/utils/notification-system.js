@@ -108,4 +108,52 @@ const notificationSystem = new NotificationSystem();
 // 전역 함수로 노출
 function showNotification(message, type = 'info', duration = 5000) {
     return notificationSystem.show(message, type, duration);
-} 
+}
+
+// 전역 에러 핸들러
+window.addEventListener('error', (event) => {
+    console.error('Global error:', event.error);
+    
+    // 사용자에게 친화적인 에러 메시지 표시
+    let errorMessage = '시스템 오류가 발생했습니다.';
+    
+    if (event.error && event.error.message) {
+        if (event.error.message.includes('network')) {
+            errorMessage = '네트워크 연결을 확인해주세요.';
+        } else if (event.error.message.includes('firebase')) {
+            errorMessage = '데이터베이스 연결에 문제가 있습니다.';
+        } else if (event.error.message.includes('auth')) {
+            errorMessage = '인증에 문제가 있습니다. 다시 로그인해주세요.';
+        }
+    }
+    
+    showNotification(errorMessage, 'error');
+});
+
+// 네트워크 상태 모니터링
+window.addEventListener('online', () => {
+    showNotification('인터넷 연결이 복구되었습니다.', 'success');
+});
+
+window.addEventListener('offline', () => {
+    showNotification('인터넷 연결이 끊어졌습니다.', 'warning');
+});
+
+// 재시도 로직을 위한 유틸리티 함수
+window.retryOperation = async (operation, maxRetries = 3, delay = 1000) => {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            return await operation();
+        } catch (error) {
+            console.error(`Attempt ${attempt} failed:`, error);
+            
+            if (attempt === maxRetries) {
+                throw error;
+            }
+            
+            // 지수 백오프
+            const waitTime = delay * Math.pow(2, attempt - 1);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+        }
+    }
+}; 
